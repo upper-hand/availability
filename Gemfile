@@ -4,5 +4,7 @@ gem 'activesupport'
 gem 'rspec'
 gem 'rspec-its'
 
-gem 'pry'
-gem 'pry-byebug'
+group :test do
+  gem 'pry'
+  gem 'pry-byebug'
+end
