@@ -17,7 +17,7 @@ RSpec.describe RecurringEvent do
 
   describe '#initialize' do
     context 'daily frequency' do
-      subject { RecurringEvent.new(duration: 15.minutes, interval: 3, start_time: Date.tomorrow) }
+      subject { RecurringEvent.create(duration: 15.minutes, interval: 3, start_time: Date.tomorrow) }
 
       its(:interval) { should eq(3) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
@@ -26,7 +26,7 @@ RSpec.describe RecurringEvent do
     end
 
     context 'monthly frequency' do
-      subject { RecurringEvent.new(duration: 2.hours, interval: 7, start_time: Date.tomorrow, frequency: :monthly) }
+      subject { RecurringEvent.create(duration: 2.hours, interval: 7, start_time: Date.tomorrow, frequency: :monthly) }
 
       its(:interval) { should eq(7) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
@@ -35,7 +35,7 @@ RSpec.describe RecurringEvent do
     end
 
     context 'yearly frequency' do
-      subject { RecurringEvent.new(duration: 30.minutes, interval: 2, start_time: Date.tomorrow, frequency: :yearly) }
+      subject { RecurringEvent.create(duration: 30.minutes, interval: 2, start_time: Date.tomorrow, frequency: :yearly) }
 
       its(:interval) { should eq(2) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
@@ -49,9 +49,9 @@ RSpec.describe RecurringEvent do
       context 'when interval is weekly' do
         it 'computes members of the residue class 0' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 7.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 70.days)
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 7.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 70.days)
           ]
 
           expect(unique_residues(events)).to eq([0])
@@ -59,9 +59,9 @@ RSpec.describe RecurringEvent do
 
         it 'computes members of the residue class 1' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 1.day),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 8.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 71.days)
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 1.day),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 8.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 71.days)
           ]
 
           expect(unique_residues(events)).to eq([1])
@@ -69,14 +69,14 @@ RSpec.describe RecurringEvent do
 
         it 'computes the complete residue system' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 1.day),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 2.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 3.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 4.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 5.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 6.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 7.days)
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 1.day),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 2.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 3.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 4.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 5.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 6.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 7.days)
           ]
 
           expect(residues(events)).to eq([0, 1, 2, 3, 4, 5, 6, 0])
@@ -86,9 +86,9 @@ RSpec.describe RecurringEvent do
       context 'when interval is every 100 days' do
         it 'computes members of the residue class 0' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning),
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning + 100.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning + 500.days)
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning),
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning + 100.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning + 500.days)
           ]
 
           expect(unique_residues(events)).to eq([0])
@@ -96,9 +96,9 @@ RSpec.describe RecurringEvent do
 
         it 'computes members of the residue class 25' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning + 25.day),
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning + 125.days),
-            RecurringEvent.new(duration: 45.minutes, interval: 100, start_time: beginning + 525.days)
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning + 25.day),
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning + 125.days),
+            RecurringEvent.create(duration: 45.minutes, interval: 100, start_time: beginning + 525.days)
           ]
 
           expect(unique_residues(events)).to eq([25])
@@ -110,9 +110,9 @@ RSpec.describe RecurringEvent do
       context 'when interval is every 5 months' do
         it 'computes members of the residue class 0' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 5.months),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 20.months)
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 5.months),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 20.months)
           ]
 
           expect(unique_residues(events)).to eq([0])
@@ -120,9 +120,9 @@ RSpec.describe RecurringEvent do
 
         it 'computes members of the residue class 1' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 1.month),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 6.months),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 51.months)
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 1.month),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 6.months),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 51.months)
           ]
 
           expect(unique_residues(events)).to eq([1])
@@ -130,12 +130,12 @@ RSpec.describe RecurringEvent do
 
         it 'computes the complete residue system' do
           events = [
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 1.month),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 2.months),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 3.months),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 4.months),
-            RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 5.months)
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 1.month),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 2.months),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 3.months),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 4.months),
+            RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 5, start_time: beginning + 5.months)
           ]
 
           expect(residues(events)).to eq([0, 1, 2, 3, 4, 0])
@@ -146,7 +146,7 @@ RSpec.describe RecurringEvent do
 
   describe '#interval=' do
     it 'updates the residue when the interval changes' do
-      event = RecurringEvent.new(duration: 45.minutes, interval: 30, start_time: beginning + 10.days)
+      event = RecurringEvent.create(duration: 45.minutes, interval: 30, start_time: beginning + 10.days)
       event.interval = 9
 
       expect(event.residue).to eq(1)
@@ -155,7 +155,7 @@ RSpec.describe RecurringEvent do
 
   describe '#start_time=' do
     it 'updates the residue when the start_time changes' do
-      event = RecurringEvent.new(duration: 45.minutes, interval: 30, start_time: beginning + 10.days)
+      event = RecurringEvent.create(duration: 45.minutes, interval: 30, start_time: beginning + 10.days)
       event.start_time = beginning + 5.days
 
       expect(event.residue).to eq(5)
@@ -201,13 +201,31 @@ RSpec.describe RecurringEvent do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
       end
+
+      context 'one time events' do
+        it 'stops after one occurrence' do
+          event = RecurringEvent.once start_time: Date.today, duration: 30.minutes
+          expect(event.last_occurrence).to eq Date.today.to_time
+        end
+
+        it 'overrides frequency' do
+          event = RecurringEvent.once frequency: :yearly, start_time: Date.yesterday, duration: 30.minutes
+          expect(event.frequency).to eq :once
+          expect(event.class).to eq RecurringEvent::Once
+        end
+
+        it 'creates one time events' do
+          event = RecurringEvent.create frequency: :once, start_time: Date.yesterday, duration: 30.minutes
+          expect(event.class).to eq RecurringEvent::Once
+        end
+      end
     end
   end
 
   describe '#occurs_at?' do
     context 'when the frequency is daily' do
       context 'when the event is biweekly and starts 5 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 14, start_time: beginning + 5.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 14, start_time: beginning + 5.days) }
 
         it 'occurs on its start date' do
           expect(event.occurs_at?(beginning + 5.days)).to be_truthy
@@ -235,7 +253,7 @@ RSpec.describe RecurringEvent do
       end
 
       context 'when the event is every 30 days and starts 11 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 30, start_time: beginning + 11.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 30, start_time: beginning + 11.days) }
 
         it 'occurs on its start date' do
           expect(event.occurs_at?(beginning + 11.days)).to be_truthy
@@ -251,10 +269,10 @@ RSpec.describe RecurringEvent do
       end
 
       it 'should process events of different intervals on the same day when applicable' do
-        event_1 = RecurringEvent.new(duration: 45.minutes, interval: 10, start_time: beginning)
-        event_2 = RecurringEvent.new(duration: 45.minutes, interval: 8, start_time: beginning + 2.days)
-        event_3 = RecurringEvent.new(duration: 45.minutes, interval: 15, start_time: beginning + 5.days)
-        event_4 = RecurringEvent.new(duration: 45.minutes, interval: 10, start_time: beginning + 5.days)
+        event_1 = RecurringEvent.create(duration: 45.minutes, interval: 10, start_time: beginning)
+        event_2 = RecurringEvent.create(duration: 45.minutes, interval: 8, start_time: beginning + 2.days)
+        event_3 = RecurringEvent.create(duration: 45.minutes, interval: 15, start_time: beginning + 5.days)
+        event_4 = RecurringEvent.create(duration: 45.minutes, interval: 10, start_time: beginning + 5.days)
 
         common_date = Time.new(1970, 2, 20)
 
@@ -267,7 +285,7 @@ RSpec.describe RecurringEvent do
 
     context 'when the frequency is monthly' do
       context 'when the event is every 3 months and starts 2 months after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 3, start_time: beginning + 2.months) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 3, start_time: beginning + 2.months) }
 
         it 'occurs on its start date' do
           expect(event.occurs_at?(beginning + 2.months)).to be_truthy
@@ -285,7 +303,7 @@ RSpec.describe RecurringEvent do
 
     context 'when the frequency is yearly' do
       context 'and the event is every 2 years and starts at the beginning' do
-        let(:event) { RecurringEvent.new(duration: 2.hours, frequency: :yearly, interval: 2, start_time: beginning + 1.year) }
+        let(:event) { RecurringEvent.create(duration: 2.hours, frequency: :yearly, interval: 2, start_time: beginning + 1.year) }
 
         it 'occurs on its start date' do
           expect(event.occurs_at?(beginning + 1.year)).to be_truthy
@@ -305,7 +323,7 @@ RSpec.describe RecurringEvent do
   describe '#next_occurrence' do
     context 'when the frequency is daily' do
       context 'when the event is every 21 days and starts 2 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 21, start_time: beginning + 2.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 21, start_time: beginning + 2.days) }
 
         it 'calculates the first occurrence' do
           expect(event.next_occurrence(beginning + 2.days)).to eq(beginning + 2.days)
@@ -329,7 +347,7 @@ RSpec.describe RecurringEvent do
       end
 
       context 'when the event is every 10 days and starts 4 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 10, start_time: beginning + 4.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 10, start_time: beginning + 4.days) }
 
         it 'calculates the first occurrence' do
           expect(event.next_occurrence(beginning + 4.days)).to eq(beginning + 4.days)
@@ -355,7 +373,7 @@ RSpec.describe RecurringEvent do
 
     context 'when the frequency is monthly' do
       context 'when the event is every 4 months and starts at the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 4, start_time: beginning) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 4, start_time: beginning) }
 
         it 'calculates the first occurrence' do
           expect(event.next_occurrence(beginning)).to eq(beginning)
@@ -381,7 +399,7 @@ RSpec.describe RecurringEvent do
 
     context 'when the frequency is yearly' do
       context 'and the event is every 3 years and starts at the beginning' do
-        let(:event) { RecurringEvent.new(duration: 2.hours, frequency: :yearly, interval: 4, start_time: beginning) }
+        let(:event) { RecurringEvent.create(duration: 2.hours, frequency: :yearly, interval: 4, start_time: beginning) }
 
         it 'calculates the first occurrence' do
           expect(event.next_occurrence(beginning.to_time)).to eq(beginning)
@@ -409,7 +427,7 @@ RSpec.describe RecurringEvent do
   describe '#next_n_occurrences' do
     context 'when the frequency is daily' do
       context 'when the event is every 7 days and starts 31 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 7, start_time: beginning + 31.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 7, start_time: beginning + 31.days) }
 
         it 'calculates the next 5 occurrences 1 day after the first processing' do
           expect(event.next_n_occurrences(5, beginning + 31.days + 1.day)).to eq([
@@ -423,7 +441,7 @@ RSpec.describe RecurringEvent do
       end
 
       context 'when the event is every 40 days and starts 11 days after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, interval: 40, start_time: beginning + 11.days) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, interval: 40, start_time: beginning + 11.days) }
 
         it 'calculates the next 3 occurrences 100 days after the first processing' do
           expect(event.next_n_occurrences(3, beginning + 11.days + 100.days)).to eq([
@@ -437,7 +455,7 @@ RSpec.describe RecurringEvent do
 
     context 'when the frequency is monthly' do
       context 'when the event is every 7 months and starts 3 months after the beginning' do
-        let(:event) { RecurringEvent.new(duration: 45.minutes, frequency: :monthly, interval: 7, start_time: beginning + 3.months) }
+        let(:event) { RecurringEvent.create(duration: 45.minutes, frequency: :monthly, interval: 7, start_time: beginning + 3.months) }
 
         it 'calculates the next 5 occurrences 1 month after the first processing' do
           expect(event.next_n_occurrences(5, beginning + 3.months + 1.month)).to eq([
@@ -448,6 +466,29 @@ RSpec.describe RecurringEvent do
             beginning + 38.months
           ])
         end
+      end
+    end
+
+    context 'performance' do
+      let(:event) { RecurringEvent.daily(duration: 45.minutes, interval: 7, start_time: beginning + 3.months) }
+
+      it 'calculates next N occurrences quickly' do
+        [1, 10, 100, 1000, 10_000, 100_000, 1_000_000].each do |n|
+          time = Time.now
+          event.next_n_occurrences n, beginning
+          time_in_seconds = Time.now.sec - time.sec
+          expect(time_in_seconds).to be <= 1, "calculating the next #{n} occurrences is too slow: took #{time_in_seconds}"
+        end
+      end
+
+      it 'returns a lazy enumerator for N > 1000' do
+        expect(event.next_n_occurrences(1001, beginning).class).to be Enumerator::Lazy
+      end
+
+      it 'returns an array for N <= 1000' do
+        expect(event.next_n_occurrences(1, beginning).class).to be Array
+        expect(event.next_n_occurrences(100, beginning).class).to be Array
+        expect(event.next_n_occurrences(1000, beginning).class).to be Array
       end
     end
   end

@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
 gem 'activesupport'
-gem 'rspec'
-gem 'rspec-its'
 
 group :test do
+  gem 'rspec'
+  gem 'rspec-its'
   gem 'pry'
   gem 'pry-byebug'
 end
