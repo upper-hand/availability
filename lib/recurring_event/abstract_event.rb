@@ -1,6 +1,6 @@
 module RecurringEvent
   class AbstractEvent
-    private_class_method :new
+    private_class_method :new # :nodoc:
   
     attr_accessor :interval, :start_time, :frequency, :duration, :stops_after
     attr_reader :residue
@@ -78,11 +78,8 @@ module RecurringEvent
       first_next_occurrence = next_occurrence(from_date)
       blk = proc { |i| first_next_occurrence + (@interval * i).send(date_move_method) }
       range = 0.upto(n - 1)
-      if n > 1000
-        range.lazy.map &blk
-      else
-        range.map &blk
-      end
+      range = range.lazy if n > 1000
+      range.map &blk
     end
 
     def residue_for(time)
