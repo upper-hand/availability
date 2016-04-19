@@ -1,4 +1,4 @@
-module RecurringEvent
+module Availability
   module ClassMethods
     def beginning
       @@beginning ||= Date.new(1970, 1, 1)
@@ -9,7 +9,7 @@ module RecurringEvent
     end
 
     def subclass_for(frequency)
-      RecurringEvent.const_get frequency.to_s.capitalize rescue nil
+      Availability.const_get frequency.to_s.capitalize rescue nil
     end
   end
   extend ClassMethods

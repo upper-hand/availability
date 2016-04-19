@@ -1,7 +1,7 @@
-require_relative 'abstract_event'
+require_relative 'abstract_availability'
 
-module RecurringEvent
-  class Weekly < AbstractEvent
+module Availability
+  class Weekly < AbstractAvailability
     extend Createable
 
     def date_move_method

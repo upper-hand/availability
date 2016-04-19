@@ -1,5 +1,5 @@
-module RecurringEvent
-  class AbstractEvent
+module Availability
+  class AbstractAvailability
     private_class_method :new # :nodoc:
   
     attr_accessor :interval, :start_time, :frequency, :duration, :stops_after
@@ -26,6 +26,10 @@ module RecurringEvent
 
     def beginning
       self.class.beginning
+    end
+
+    def end_time
+      start_time + duration
     end
 
     def interval=(interval)

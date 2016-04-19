@@ -1,7 +1,7 @@
-require_relative 'abstract_event'
+require_relative 'abstract_availability'
 
-module RecurringEvent
-  class Once < AbstractEvent
+module Availability
+  class Once < AbstractAvailability
     extend Createable
 
     def self.default_args
