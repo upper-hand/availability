@@ -1,6 +1,10 @@
 module SchedulerSpecHelpers
-  def one_hour_slot_per_week(at: , **rest)
-    Availability.weekly **rest.merge(duration: 1.hour, start_time: Time.new(*at))
+  def T(*args)
+    Time.new *args
+  end
+
+  def one_hour_slot_per_week(**args)
+    Availability.weekly **args, duration: 1.hour
   end
 end
 
@@ -10,11 +14,11 @@ RSpec.describe Scheduler do
   context '#allow?' do
     let(:bob_availabilities) do
       [
-        one_hour_slot_per_week(at: [2016, 4, 11, 9], stops_after: 4),
-        one_hour_slot_per_week(at: [2016, 4, 12, 9], stops_after: 4),
-        one_hour_slot_per_week(at: [2016, 4, 13, 9], stops_after: 4),
-        one_hour_slot_per_week(at: [2016, 4, 14, 9], stops_after: 4),
-        one_hour_slot_per_week(at: [2016, 4, 15, 9], stops_after: 4)
+        one_hour_slot_per_week(start_time: T(2016, 4, 11, 9), stops_by: T(2016, 5,  9, 9)),
+        one_hour_slot_per_week(start_time: T(2016, 4, 12, 9), stops_by: T(2016, 5, 10, 9)),
+        one_hour_slot_per_week(start_time: T(2016, 4, 13, 9), stops_by: T(2016, 5, 11, 9)),
+        one_hour_slot_per_week(start_time: T(2016, 4, 14, 9), stops_by: T(2016, 5, 12, 9)),
+        one_hour_slot_per_week(start_time: T(2016, 4, 15, 9), stops_by: T(2016, 5, 13, 9))
       ]
     end
 
@@ -27,7 +31,7 @@ RSpec.describe Scheduler do
       it { expect{bobs_schedule.allow? start_time: Date.today }.to raise_error ArgumentError }
       it { expect{bobs_schedule.allow? end_time: nil }.to raise_error ArgumentError }
       it { expect{bobs_schedule.allow? end_time: Date.today }.to raise_error ArgumentError }
-      it { expect{bobs_schedule.allow? availability_request: one_hour_slot_per_week(at: 0)}.not_to raise_error }
+      it { expect{bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(0))}.not_to raise_error }
       it { expect{bobs_schedule.allow? start_time: Date.today, end_time: Date.tomorrow}.not_to raise_error }
     end
 
@@ -39,19 +43,20 @@ RSpec.describe Scheduler do
       end
 
       it 'allows an event request in the second week that lasts until the end of the availability' do
-        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(at: [2016, 4, 18, 9], stops_after: 3)).to eq true
+        ar = one_hour_slot_per_week(start_time: T(2016, 4, 18, 9), stops_by: T(2016, 5, 2, 9))
+        expect(bobs_schedule.allow? availability_request: ar).to eq true
       end
 
       it 'does not allow an event request that is beyond the availability frequency' do
-        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(at: [2016, 4, 18, 9], frequency: 4)).to eq false
+        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 18, 9), frequency: 4)).to eq false
       end
 
       it 'does not allow an event request that starts before the availability frequency' do
-        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(at: [2016, 4, 4, 9], frequency: 4)).to eq false
+        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), frequency: 4)).to eq false
       end
 
       it 'does not allow an event request with a different frequency' do
-        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(at: [2016, 4, 4, 9], frequency: 5)).to eq false
+        expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), frequency: 5)).to eq false
       end
     end
 

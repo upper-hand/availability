@@ -4,12 +4,24 @@ module Availability
   class Once < AbstractAvailability
     extend Createable
 
-    def self.default_args
-      {frequency: :once, interval: 0, stops_after: 1}
+    def initialize(**args)
+      super **args, frequency: :once, interval: 0, stops_by: args[:start_time] + args[:duration]
     end
 
     def date_move_method
-      nil
+      :days
+    end
+
+    def interval_difference(this, that)
+      raise NotImplementedError.new('not supported')
+    end
+
+    def move_by(time, amount)
+      time + amount.days
+    end
+
+    def last_occurrence
+      start_time
     end
 
     def residue_for(time)

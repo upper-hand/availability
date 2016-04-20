@@ -5,12 +5,24 @@ module Availability
     extend Createable
 
     def date_move_method
-      :weeks
+      :days
+    end
+
+    def interval
+      @interval * 7
+    end
+
+    def interval_difference(first, second)
+      first_date, second_date = [first.to_date, second.to_date].sort
+      (second_date - first_date).to_i #/ interval
+    end
+
+    def move_by(time, amount)
+      time + amount.days
     end
 
     def residue_for(time)
-      date = time.to_date
-      ((date.cweek - beginning.cweek) * 52).modulo(@interval)
+      (time.to_date - beginning.to_date).to_i.modulo(interval)
     end
   end
 end

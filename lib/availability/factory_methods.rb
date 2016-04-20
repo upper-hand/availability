@@ -3,11 +3,11 @@ module Availability
     def create(**args)
       cls = args.delete(:event_class) || Availability::subclass_for(args[:frequency] ||= :daily)
       raise ArgumentError, "undefined frequency" if cls.nil?
-      cls.send :new, **args.merge(cls.default_args)
+      cls.send :new, **args
     end
 
     def once(**args)
-      create **args, **Once.default_args
+      Once.create **args
     end
 
     %w{day week month year}.each do |suffix|
