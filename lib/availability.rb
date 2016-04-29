@@ -1,7 +1,6 @@
 require 'active_support'
 require 'active_support/core_ext'
 require_relative 'availability/createable'
-require_relative 'availability/time_overlapping'
 require_relative 'availability/exclusion'
 require_relative 'availability/abstract_availability'
 require_relative 'availability/daily'

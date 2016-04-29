@@ -8,10 +8,6 @@ module Availability
       super **args, frequency: :once, interval: 0, stops_by: args[:start_time] + args[:duration]
     end
 
-    def date_move_method
-      :days
-    end
-
     def interval_difference(this, that)
       raise NotImplementedError.new('not supported')
     end

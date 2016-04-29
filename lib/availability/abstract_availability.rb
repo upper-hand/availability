@@ -1,10 +1,9 @@
 module Availability
   class AbstractAvailability
-    include TimeOverlapping
     private_class_method :new # :nodoc:
   
-    attr_accessor :frequency, :duration, :stops_by
-    attr_reader :residue, :exclusions, :interval, :start_time
+    attr_accessor :capacity, :duration, :frequency, :stops_by
+    attr_reader :exclusions, :interval, :residue, :start_time
 
     #
     # Required arguments:
@@ -16,13 +15,20 @@ module Availability
     #   frequency: a symbol, one of [:once, :daily, :monthly, :yearly]; defaults to :daily
     #   stops_by: specific date by which the availability ends
     #
-    def initialize(frequency: :daily, stops_by: nil, exclusions: nil, interval: , start_time: , duration: )
+    def initialize(capacity: Float::INFINITY, exclusions: nil, frequency: :daily, stops_by: nil, duration: , interval: , start_time: )
+      @capacity = capacity
+      @duration = duration
       @frequency = frequency
       @interval = interval
       @start_time = start_time.to_time
-      @duration = duration
       @stops_by = stops_by
       self.exclusions = exclusions
+      compute_residue
+    end
+
+    def initialize_copy(orig)
+      super
+      @exclusions = orig.exclusions
       compute_residue
     end
 
@@ -38,10 +44,6 @@ module Availability
       else
         true
       end
-    end
-
-    def date_move_method
-      raise 'subclass responsibility'
     end
 
     def end_time
@@ -128,16 +130,39 @@ module Availability
       raise 'subclass responsibility'
     end
 
+    def schedule_on(scheduler)
+      scheduler.add_to_schedule event: self, max_capacity: capacity
+    end
+
     def start_time=(start_time)
       @start_time = start_time
       compute_residue
       self
     end
 
+    def time_overlaps?(time, start_time, end_time)
+      that_start = time.seconds_since_midnight.to_i
+      this_start = start_time.seconds_since_midnight.to_i
+      this_end   = end_time.seconds_since_midnight.to_i
+      (this_start..this_end).include?(that_start)
+    end
+
     private
 
     def compute_residue
       @residue = residue_for(@start_time)
+    end
+
+    def hour_offset_from_midnight(time)
+      time.to_time.hour * 60 * 60
+    end
+
+    def minute_offset_from_midnight(time)
+      time.to_time.min * 60
+    end
+
+    def second_offset_from_midnight(time)
+      time.to_time.sec
     end
   end
 end

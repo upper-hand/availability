@@ -4,10 +4,6 @@ module Availability
   class Yearly < AbstractAvailability
     extend Createable
 
-    def date_move_method
-      :years
-    end
-
     def interval_difference(first, second)
       first_date, second_date = [first.to_date, second.to_date].sort
       second_date.year - first_date.year

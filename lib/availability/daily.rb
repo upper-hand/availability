@@ -4,10 +4,6 @@ module Availability
   class Daily < AbstractAvailability
     extend Createable
 
-    def date_move_method
-      :days
-    end
-
     def interval_difference(this, that)
       first, second = [this.to_date, that.to_date].sort
       (second - first).to_i

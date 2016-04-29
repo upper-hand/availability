@@ -4,10 +4,6 @@ module Availability
   class Weekly < AbstractAvailability
     extend Createable
 
-    def date_move_method
-      :days
-    end
-
     def interval
       @interval * 7
     end

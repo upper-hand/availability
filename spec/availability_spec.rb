@@ -16,6 +16,21 @@ RSpec.describe Availability do
   include AvailabilitySpecHelpers
 
   describe '#initialize' do
+    context 'AbstractAvailability' do
+      it 'should not be able to instantiate an AbstractAvailability' do
+        expect { Availability::AbstractAvailability.new }.to raise_error NoMethodError
+      end
+    end
+
+    context 'concrete classes:' do
+      let (:args) { {duration: 1.hour, interval: 1, start_time: Date.today} }
+      %w{ Once Daily Weekly Monthly Yearly }.each do |subclass_name|
+        it "allows #{subclass_name} to be instantiated" do
+          expect { Availability.const_get(subclass_name).new **args }.not_to raise_error
+        end
+      end
+    end
+
     context 'daily frequency' do
       subject { Availability.once(duration: 15.minutes, start_time: Date.tomorrow) }
 
@@ -658,6 +673,11 @@ RSpec.describe Availability do
         expect(availability.corresponds_to? availability).to be true
       end
 
+      context 'when it overlaps the incoming availability' do
+        let(:smaller_one) { Availability.daily(duration: 15.minutes, start_time: beginning + 3.months + 15.minutes) }
+        it { expect(availability.corresponds_to? smaller_one).to be true }
+      end
+
       it 'a similar availability' do
         expect(similar_availability.corresponds_to? availability).to be true
         expect(availability.corresponds_to? similar_availability).to be true
@@ -678,5 +698,9 @@ RSpec.describe Availability do
         expect(availability.corresponds_to? once).to be true
       end
     end
+  end
+
+  context 'checks capacity' do
+    pending
   end
 end
