@@ -1,6 +1,6 @@
 # availability - easily and quickly calculate schedule availability
 
-[![Build Status][travis-availability-png]](https://travis-ci.org/upper-hand/availability.svg?branch=master)
+[![Build Status](https://travis-ci.org/upper-hand/availability.svg?branch=master)](https://travis-ci.org/upper-hand/availability)
 [![Gem Version](https://badge.fury.io/rb/availability.svg)](https://badge.fury.io/rb/availability)
 
 This library uses modular arithmetic and residue classes to calculate schedule availability for dates. Time ranges within a date are handled differently. The goal is to create an easy-to-use API for schedule availability that is very fast and lightweight that is also easy and lightweight to persist in a database.
