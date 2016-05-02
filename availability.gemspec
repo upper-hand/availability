@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jason Rogers"]
   spec.email         = ["jacaetevha@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
-  spec.license       = "MIT"
+  spec.summary       = %q{Calculating schedule availability}
+  spec.description   = %q{Use modular arithmetic and residue classes to calculate schedule availability for dates (times handled separately).}
+  spec.homepage      = "https://github.com/upper-hand/availability"
+  spec.license       = "Unlicense"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
