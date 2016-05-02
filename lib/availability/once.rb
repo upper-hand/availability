@@ -5,6 +5,8 @@ module Availability
     extend Createable
 
     def initialize(**args)
+      raise ArgumentError, "start_time is required" unless args.has_key?(:start_time)
+      raise ArgumentError, "duration is required" unless args.has_key?(:duration)
       super **args, frequency: :once, interval: 0, stops_by: args[:start_time] + args[:duration]
     end
 

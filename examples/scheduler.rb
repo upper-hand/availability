@@ -1,5 +1,9 @@
 require_relative '../lib/availability'
 
+#
+# This is just an example of a scheduler that might be used with availabilities. It's a work in
+# progress that's helping to flesh out the design of availabilities.
+#
 class Scheduler
   attr_reader :availabilities, :scheduled
 

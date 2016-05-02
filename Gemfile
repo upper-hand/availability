@@ -1,10 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'activesupport'
-
-group :test do
-  gem 'rspec'
-  gem 'rspec-its'
-  gem 'pry'
-  gem 'pry-byebug'
-end
+# Specify your gem's dependencies in availability.gemspec
+gemspec

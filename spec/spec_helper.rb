@@ -1,6 +1,6 @@
-require 'pry'
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'rspec/its'
-require_relative '../lib/availability'
+require 'availability'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
