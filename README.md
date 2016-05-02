@@ -1,7 +1,15 @@
-This is a proof of concept based on [Devin McCabe's subscriptions-with-ruby](https://github.com/dpmccabe/subscriptions-with-ruby) repository.
+# availability - easily and quickly calculate schedule availability
 
-The adaptation handles time as well as dates, and adds support for yearly frequencies. Finally, the main class and it's public interface have been renamed to clearly reflect the intent to work with recurring events, not just recurring subscriptions.
+[![Build Status][travis-availability-png]][travis-availability]
+[![Gem Version](https://badge.fury.io/rb/availability.svg)](http://badge.fury.io/rb/availability)
 
-This is a work-in-progress.
+This library uses modular arithmetic and residue classes to calculate schedule availability for dates. Time ranges within a date are handled differently. The goal is to create an easy-to-use API for schedule availability that is very fast and lightweight that is also easy and lightweight to persist in a database.
 
-Shout out to @dpmccabe -- thanks for your [original article](http://dmcca.be/2014/01/09/recurring-subscriptions-with-ruby-rspec-and-modular-arithmetic.html) and code.
+Shout out to @dpmccabe for his [original article](http://dmcca.be/2014/01/09/recurring-subscriptions-with-ruby-rspec-and-modular-arithmetic.html) and code.
+
+```
+gem install availability
+```
+
+### TODO
+add more documentation
