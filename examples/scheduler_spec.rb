@@ -1,3 +1,5 @@
+require_relative 'scheduler'
+
 module SchedulerSpecHelpers
   def T(*args)
     Time.new *args

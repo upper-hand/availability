@@ -1,7 +1,6 @@
 require 'pry'
 require 'rspec/its'
 require_relative '../lib/availability'
-require_relative '../lib/scheduler'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

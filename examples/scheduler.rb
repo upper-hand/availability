@@ -1,4 +1,4 @@
-require_relative 'availability'
+require_relative '../lib/availability'
 
 class Scheduler
   attr_reader :availabilities, :scheduled
