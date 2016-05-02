@@ -12,17 +12,6 @@ class Scheduler
   end
 
   #
-  # Adds the given request to the list of scheduled events.
-  #
-  # request: an Availability instance
-  #
-  def add_to_schedule(event)
-    availability = availability_for(event)
-    scheduled[availability] << event unless scheduled[availability].size >= availability.capacity
-    self
-  end
-
-  #
   # This method expects either an availability request or a start/end time pair. If the
   # start/end time pair is offered, this method acts the same as if an Availability::Once
   # request was offered with the given start_time and a duration going through the given
@@ -54,8 +43,9 @@ class Scheduler
   #
   def schedule(**args)
     request = convert **args
-    return self unless allow? availability_request: request
-    request.schedule_on self
+    availability = allow? availability_request: request
+    return self unless availability
+    scheduled[availability] << request unless scheduled[availability].size >= availability.capacity
     self
   end
 

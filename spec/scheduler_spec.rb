@@ -41,7 +41,7 @@ RSpec.describe Scheduler do
 
       context 'at capacity' do
         before :each do
-          bob_availabilities.each { |e| bobs_schedule.scheduled[e] = 1 }
+          bob_availabilities.each { |e| bobs_schedule.scheduled[e] = [double('a request')] }
         end
 
         context 'with a shorter slot that fits within the availability' do

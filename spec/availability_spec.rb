@@ -699,8 +699,4 @@ RSpec.describe Availability do
       end
     end
   end
-
-  context 'checks capacity' do
-    pending
-  end
 end

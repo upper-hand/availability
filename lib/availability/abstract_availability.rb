@@ -136,10 +136,6 @@ module Availability
       raise 'subclass responsibility'
     end
 
-    def schedule_on(scheduler)
-      scheduler.add_to_schedule self
-    end
-
     def start_time=(start_time)
       @start_time = start_time
       compute_residue
