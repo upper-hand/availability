@@ -30,32 +30,40 @@ RSpec.describe Scheduler do
 
     describe '#schedule' do
       let(:request) { bob_availabilities.first.dup }
+      let(:short_request) do
+        half_hour_slot_per_week start_time: T(2016, 4, 14, 9, 15), stops_by: T(2016, 5, 12, 9, 45)
+      end
+      let(:scheduled_count) { -> { bobs_schedule.scheduled.values.map(&:size).sum } }
 
-      it 'accepts a request' do
-        expect{ bobs_schedule.schedule availability_request: request }.to \
-          change{ bobs_schedule.scheduled.size }.from(0).to(1)
+      before :each do
+        bob_availabilities.each { |e| e.capacity = 1 }
       end
 
-      it 'does not accept a request if capacity is already met' do
-        bob_availabilities.first.capacity = 0
-        expect{ bobs_schedule.schedule availability_request: request }.not_to \
-          change{ bobs_schedule.scheduled.size }
+      context 'at capacity' do
+        before :each do
+          bob_availabilities.each { |e| bobs_schedule.scheduled[e] = 1 }
+        end
+
+        context 'with a shorter slot that fits within the availability' do
+          it 'does not accept a request' do
+            expect{ bobs_schedule.schedule availability_request: short_request }.not_to change(&scheduled_count)
+          end
+        end
+
+        it 'does not accept a request' do
+          expect{ bobs_schedule.schedule availability_request: request }.not_to change(&scheduled_count)
+        end
       end
 
-      context 'with a shorter slot that fits within the availability' do
-        let(:request) do
-          half_hour_slot_per_week start_time: T(2016, 4, 14, 9, 15), stops_by: T(2016, 5, 12, 9, 45)
+      context 'not at capacity' do
+        context 'with a shorter slot that fits within the availability' do
+          it 'accepts a request' do
+            expect{ bobs_schedule.schedule availability_request: short_request }.to change(&scheduled_count).from(0).to(1)
+          end
         end
 
         it 'accepts a request' do
-          expect{ bobs_schedule.schedule availability_request: request }.to \
-            change{ bobs_schedule.scheduled.size }.from(0).to(1)
-        end
-
-        it 'does not accept a request if capacity is already met' do
-          bob_availabilities.first.capacity = 0
-          expect{ bobs_schedule.schedule availability_request: request }.not_to \
-            change{ bobs_schedule.scheduled.size }
+          expect{ bobs_schedule.schedule availability_request: request }.to change(&scheduled_count).from(0).to(1)
         end
       end
     end

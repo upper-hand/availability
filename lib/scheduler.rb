@@ -16,9 +16,9 @@ class Scheduler
   #
   # request: an Availability instance
   #
-  def add_to_schedule(event: , max_capacity: )
+  def add_to_schedule(event)
     availability = availability_for(event)
-    scheduled[availability] << event unless scheduled[availability].size >= max_capacity
+    scheduled[availability] << event unless scheduled[availability].size >= availability.capacity
     self
   end
 

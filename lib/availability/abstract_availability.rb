@@ -26,6 +26,9 @@ module Availability
       compute_residue
     end
 
+    #
+    # The copy constructor that Ruby calls when cloning or duping an object.
+    #
     def initialize_copy(orig)
       super
       @exclusions = orig.exclusions
@@ -40,7 +43,10 @@ module Availability
       return unless occurs_at?(availability.start_time) && occurs_at?(availability.start_time + availability.duration)
       if !!stops_by
         that_last = availability.last_occurrence
-        !that_last.nil? && occurs_at?(that_last) && that_last <= self.last_occurrence
+        !that_last.nil? &&
+          occurs_at?(that_last) &&
+          occurs_at?(that_last + availability.duration) &&
+          that_last.to_date <= self.last_occurrence.to_date
       else
         true
       end
@@ -131,7 +137,7 @@ module Availability
     end
 
     def schedule_on(scheduler)
-      scheduler.add_to_schedule event: self, max_capacity: capacity
+      scheduler.add_to_schedule self
     end
 
     def start_time=(start_time)
