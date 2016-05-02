@@ -10,7 +10,7 @@ module Availability
 
     def interval_difference(first, second)
       first_date, second_date = [first.to_date, second.to_date].sort
-      (second_date - first_date).to_i #/ interval
+      (second_date - first_date).to_i
     end
 
     def move_by(time, amount)
@@ -18,7 +18,7 @@ module Availability
     end
 
     def residue_for(time)
-      (time.to_date - beginning.to_date).to_i.modulo(interval)
+      interval_difference(time, beginning).modulo(interval)
     end
   end
 end

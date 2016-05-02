@@ -14,8 +14,6 @@ module Availability
     end
 
     def residue_for(time)
-      # date = time.to_date
-      # ((date.year - beginning.year) * 12 + (date.month - beginning.month)).modulo(@interval)
       interval_difference(beginning, time).modulo(@interval)
     end
   end

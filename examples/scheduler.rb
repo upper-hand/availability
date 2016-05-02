@@ -72,7 +72,7 @@ class Scheduler
 
   def validate_availabilities(availabilities)
     list = Array(availabilities).flatten.compact
-    return list if list.all? { |e| e.respond_to? :corresponds_to? }
+    return list if list.all? { |e| Availability.availability?(e) }
     raise ArgumentError, "expected a list of availabilities"
   end
 

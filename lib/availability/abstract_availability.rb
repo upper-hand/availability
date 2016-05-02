@@ -43,7 +43,7 @@ module Availability
     end
 
     def corresponds_to?(availability)
-      return unless occurs_at?(availability.start_time) && occurs_at?(availability.start_time + availability.duration)
+      return false unless occurs_at?(availability.start_time) && occurs_at?(availability.start_time + availability.duration)
       if !!stops_by
         that_last = availability.last_occurrence
         !that_last.nil? &&
@@ -60,6 +60,7 @@ module Availability
     end
 
     def exclusions=(exclusions)
+      #TODO: should be a set of exclusions
       @exclusions = Array(exclusions).flatten.compact + [
         Exclusion.before_day(start_time),
         Exclusion.before_time(start_time)
