@@ -1,0 +1,5 @@
+--color
+--require spec_helper
+-I examples
+--require scheduler_spec
+--format progress
