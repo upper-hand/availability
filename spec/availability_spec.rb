@@ -36,7 +36,6 @@ RSpec.describe Availability do
 
       its(:interval) { should eq(0) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
-      its(:frequency) { should eq(:once) }
       its(:duration) { should eq(15.minutes) }
     end
 
@@ -45,7 +44,6 @@ RSpec.describe Availability do
 
       its(:interval) { should eq(4) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
-      its(:frequency) { should eq(:daily) }
       its(:duration) { should eq(15.minutes) }
     end
 
@@ -54,7 +52,6 @@ RSpec.describe Availability do
 
       its(:interval) { should eq(21) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
-      its(:frequency) { should eq(:weekly) }
       its(:duration) { should eq(15.minutes) }
     end
 
@@ -63,7 +60,6 @@ RSpec.describe Availability do
 
       its(:interval) { should eq(5) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
-      its(:frequency) { should eq(:monthly) }
       its(:duration) { should eq(2.hours) }
     end
 
@@ -72,7 +68,6 @@ RSpec.describe Availability do
 
       its(:interval) { should eq(2) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
-      its(:frequency) { should eq(:yearly) }
       its(:duration) { should eq(30.minutes) }
     end
 
@@ -83,7 +78,6 @@ RSpec.describe Availability do
             event = Availability.send("every_#{name}_#{factory_suffix}", duration: 1.hour, start_time: Date.today)
             interval *= 7 if frequency == :weekly
             expect(event.interval).to eq interval
-            expect(event.frequency).to eq frequency
             expect(event.duration).to eq 1.hour
           end
         end
@@ -94,8 +88,7 @@ RSpec.describe Availability do
       {day: :daily, week: :weekly, month: :monthly, year: :yearly}.each do | factory_suffix, frequency |
         it "#every_other_#{factory_suffix}" do
           availability = Availability.send("every_other_#{factory_suffix}", duration: 1.hour, start_time: Date.today)
-          expect(availability.interval).to eq frequency == :weekly ? 14 : 2
-          expect(availability.frequency).to eq frequency
+          expect(availability.interval).to eq( frequency == :weekly ? 14 : 2 )
           expect(availability.duration).to eq 1.hour
         end
       end
@@ -231,12 +224,6 @@ RSpec.describe Availability do
       it 'stops after one occurrence' do
         availability = Availability.once start_time: Date.today, duration: 30.minutes
         expect(availability.last_occurrence).to eq Date.today.to_time
-      end
-
-      it 'overrides frequency' do
-        availability = Availability.once frequency: :yearly, start_time: Date.yesterday, duration: 30.minutes
-        expect(availability.frequency).to eq :once
-        expect(availability.class).to eq Availability::Once
       end
 
       it 'creates one time availabilities' do

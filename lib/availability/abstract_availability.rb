@@ -15,13 +15,12 @@ module Availability
     #   frequency: a symbol, one of [:once, :daily, :monthly, :yearly]; defaults to :daily
     #   stops_by: specific date by which the availability ends
     #
-    def initialize(capacity: Float::INFINITY, exclusions: nil, frequency: :daily, stops_by: nil, duration: , interval: , start_time: )
+    def initialize(capacity: Float::INFINITY, exclusions: nil, stops_by: nil, duration: , interval: , start_time: )
       raise ArgumentError, "start_time is required" if start_time.nil?
       raise ArgumentError, "duration is required" if duration.nil?
       raise ArgumentError, "interval is required" if interval.nil?
       @capacity = capacity
       @duration = duration
-      @frequency = frequency
       @interval = interval
       @start_time = start_time.to_time
       @stops_by = stops_by

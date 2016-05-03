@@ -94,16 +94,16 @@ RSpec.describe Scheduler do
           expect(bobs_schedule.allow? availability_request: ar).to be_truthy
         end
 
-        it 'does not allow an event request that is beyond the availability frequency' do
-          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 18, 9), frequency: 4)).to be_falsey
+        it 'does not allow an event request that is beyond the availability interval' do
+          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 18, 9), interval: 4)).to be_falsey
         end
 
-        it 'does not allow an event request that starts before the availability frequency' do
-          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), frequency: 4)).to be_falsey
+        it 'does not allow an event request that starts before the availability interval' do
+          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), interval: 4)).to be_falsey
         end
 
-        it 'does not allow an event request with a different frequency' do
-          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), frequency: 5)).to be_falsey
+        it 'does not allow an event request with a different interval' do
+          expect(bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(2016, 4, 4, 9), interval: 5)).to be_falsey
         end
       end
 

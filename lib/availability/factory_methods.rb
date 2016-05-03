@@ -1,7 +1,7 @@
 module Availability
   module FactoryMethods
     def create(**args)
-      cls = args.delete(:event_class) || Availability::subclass_for(args[:frequency] ||= :daily)
+      cls = args.delete(:event_class) || Availability::subclass_for(args.delete(:frequency) || :daily)
       raise ArgumentError, "undefined frequency" if cls.nil?
       cls.send :new, **args
     end
