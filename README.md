@@ -92,5 +92,5 @@ see <http://unlicense.org/> or the accompanying [UNLICENSE]{UNLICENSE} file.
 [OCCURS_AT]:        http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#occurs_at%3F-instance_method
 [CORRESPONDS_TO]:   http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#corresponds_to%3F-instance_method
 [LAST_OCCURRENCE]:  http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#last_occurrence-instance_method
-[NEXT_N_OCCURS]:    http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#next_n_occurrences%3F-instance_method
-[NEXT_OCCUR]:       http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#next_occurrence%3F-instance_method
+[NEXT_N_OCCURS]:    http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#next_n_occurrences-instance_method
+[NEXT_OCCUR]:       http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#next_occurrence-instance_method
