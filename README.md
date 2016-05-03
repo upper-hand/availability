@@ -40,7 +40,7 @@ This returns a single time object for the next occurrence on or after the given 
 ## Examples
 
 ```ruby
-# Every Monday from 9:00 AM to 10:00 AM starting on May 2, 2016
+# Every other Monday from 9:00 AM to 10:00 AM starting on May 2, 2016
 Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
 
 # A business week starting on May 2, 2016 going from 1:30 PM until 2:00 PM every day
