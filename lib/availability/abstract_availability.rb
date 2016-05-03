@@ -1,19 +1,19 @@
 module Availability
+  # @abstract see concrete classes: Once, Daily, Weekly, Monthly and Yearly
   class AbstractAvailability
     private_class_method :new # :nodoc:
   
-    attr_accessor :capacity, :duration, :frequency, :stops_by
+    attr_accessor :capacity, :duration, :stops_by
     attr_reader :exclusions, :interval, :residue, :start_time
 
     #
     # Required arguments:
-    #   interval: an integer that is the interval of occurrences per frequency
-    #   start_time: a Time, Date, or DateTime that indicates when the availability begins
-    #   duration: an integer indicating how long the availability lasts in seconds
+    # @param [Fixnum] interval an integer that is the interval of occurrences per frequency
+    # @param [Time] start_time a Time, Date, or DateTime that indicates when the availability begins
+    # @param [Fixnum] duration an integer indicating how long the availability lasts in seconds
     #
     # Optional arguements:
-    #   frequency: a symbol, one of [:once, :daily, :monthly, :yearly]; defaults to :daily
-    #   stops_by: specific date by which the availability ends
+    # @param [Time] stops_by specific Date, Time, or DateTime by which the availability ends
     #
     def initialize(capacity: Float::INFINITY, exclusions: nil, stops_by: nil, duration: , interval: , start_time: )
       raise ArgumentError, "start_time is required" if start_time.nil?
@@ -41,6 +41,15 @@ module Availability
       self.class.beginning
     end
 
+    # @!group Testing
+
+    #
+    # Whether or not the availability is covered by the receiver
+    #
+    # @param [Availability::AbstractAvailability] availability the availability to test for coverage
+    #
+    # @return [Boolean] true or false
+    #
     def corresponds_to?(availability)
       return false unless occurs_at?(availability.start_time) && occurs_at?(availability.start_time + availability.duration)
       if !!stops_by
@@ -53,6 +62,79 @@ module Availability
         true
       end
     end
+
+    #
+    # Whether or not the given time is covered by the receiver
+    #
+    # @param [Time] time the Date, Time, or DateTime to test for coverage
+    #
+    # @return [Boolean] true or false
+    #
+    def occurs_at?(time)
+      residue_for(time) == @residue && time_overlaps?(time, start_time, start_time + duration)
+    end
+
+    # @!endgroup
+
+    # @!group Occurrences
+
+    #
+    # Calculates the last occurrence of an availability
+    #
+    # @return [Time] the last occurrence of the receiver, or nil if stops_by is not set
+    #
+    def last_occurrence
+      return nil unless stops_by
+      unless @last_occurrence
+        next_date = move_by start_time, interval_difference(start_time, stops_by)
+        next_date = move_by next_date, -1 * interval while next_date >= stops_by && residue_for(next_date) != residue
+        @last_occurrence = next_occurrence next_date
+      end
+      @last_occurrence
+    end
+
+    #
+    # Calculates a time for the next occurrence on or after the given date or time.
+    # If no occurrence exists, `nil` is returned.
+    #
+    # from_date: a Date, Time, or DateTime from which to start calculating
+    #
+    # @return [Time] the next occurrence (or nil)
+    #
+    def next_occurrence(from_date)
+      residue = @residue - residue_for(from_date)
+      date = move_by from_date, residue.modulo(interval)
+      time = Time.new(date.year, date.month, date.day, start_time.hour, start_time.min, start_time.sec)
+      if exclusions.any? {|rule| rule.violated_by? time}
+        if stops_by && time > stops_by
+          nil
+        else
+          next_occurrence(move_by time, 1)
+        end
+      else
+        time
+      end
+    end
+
+    #
+    # Calculates occurrences for n <= 1000; where n > 1000, it returns a lazy enumerator
+    #
+    # @param [Fixnum] n how many occurrences to get
+    # @param [Date, Time, DateTime] from_date time from which to start calculating
+    #
+    # @return [Enumerable] an array of [Time] or lazy enumeration for n > 1000
+    #
+    def next_n_occurrences(n, from_date)
+      first_next_occurrence = next_occurrence(from_date)
+      blk = proc { |i| move_by first_next_occurrence, interval * i }
+      range = 0.upto(n - 1)
+      range = range.lazy if n > 1000
+      range.map &blk
+    end
+
+    # @!endgroup
+
+    # @!group Accessors
 
     def end_time
       start_time + duration
@@ -74,69 +156,10 @@ module Availability
       self
     end
 
-    def interval
-      @interval
-    end
-
     def interval=(interval)
       @interval = interval
       compute_residue
       self
-    end
-
-    def interval_difference(first, second)
-      raise 'subclass responsibility'
-    end
-
-    def last_occurrence
-      return nil unless stops_by
-      unless @last_occurrence
-        next_date = move_by start_time, interval_difference(start_time, stops_by)
-        next_date = move_by next_date, -1 * interval while next_date >= stops_by && residue_for(next_date) != residue
-        @last_occurrence = next_occurrence next_date
-      end
-      @last_occurrence
-    end
-
-    def move_by(time, amount)
-      raise 'subclass responsibility'
-    end
-
-    def next_occurrence(from_date)
-      residue = @residue - residue_for(from_date)
-      date = move_by from_date, residue.modulo(interval)
-      time = Time.new(date.year, date.month, date.day, start_time.hour, start_time.min, start_time.sec)
-      if exclusions.any? {|rule| rule.violated_by? time}
-        if stops_by && time > stops_by
-          nil
-        else
-          next_occurrence(move_by time, 1)
-        end
-      else
-        time
-      end
-    end
-
-    #
-    # Returns an array of occurrences for n <= 1000, otherwise it returns a lazy enumerator
-    #
-    # n: Fixnum, how many occurrences to get
-    # from_date: a Date, Time, or DateTime from which to start calculating
-    #
-    def next_n_occurrences(n, from_date)
-      first_next_occurrence = next_occurrence(from_date)
-      blk = proc { |i| move_by first_next_occurrence, interval * i }
-      range = 0.upto(n - 1)
-      range = range.lazy if n > 1000
-      range.map &blk
-    end
-
-    def occurs_at?(time)
-      residue_for(time) == @residue && time_overlaps?(time, start_time, start_time + duration)
-    end
-
-    def residue_for(time)
-      raise 'subclass responsibility'
     end
 
     def start_time=(start_time)
@@ -145,12 +168,34 @@ module Availability
       self
     end
 
+    # @!endgroup
+
+    # @!group Helpers
+
     def time_overlaps?(time, start_time, end_time)
       that_start = time.seconds_since_midnight.to_i
       this_start = start_time.seconds_since_midnight.to_i
       this_end   = end_time.seconds_since_midnight.to_i
       (this_start..this_end).include?(that_start)
     end
+
+    # @!endgroup
+
+    # @!group Subclass Responsibilities
+
+    def interval_difference(first, second)
+      raise 'subclass responsibility'
+    end
+
+    def move_by(time, amount)
+      raise 'subclass responsibility'
+    end
+
+    def residue_for(time)
+      raise 'subclass responsibility'
+    end
+
+    # @!endgroup
 
     private
 
