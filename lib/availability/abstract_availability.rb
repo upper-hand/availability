@@ -51,13 +51,14 @@ module Availability
     # @return [Boolean] true or false
     #
     def corresponds_to?(availability)
-      return false unless occurs_at?(availability.start_time) && occurs_at?(availability.start_time + availability.duration)
+      return false unless occurs_at?(availability.start_time) \
+        && occurs_at?(availability.start_time + availability.duration - 1.second)
       if !!stops_by
         that_last = availability.last_occurrence
-        !that_last.nil? &&
-          occurs_at?(that_last) &&
-          occurs_at?(that_last + availability.duration) &&
-          that_last.to_date <= self.last_occurrence.to_date
+        !that_last.nil? \
+          && occurs_at?(that_last) \
+          && occurs_at?(that_last + availability.duration - 1.second) \
+          && that_last.to_date <= self.last_occurrence.to_date
       else
         true
       end
@@ -66,7 +67,7 @@ module Availability
     #
     # Whether or not the given time is covered by the receiver
     #
-    # @param [Time] time the Date, Time, or DateTime to test for coverage
+    # @param [Time] time the Time to test for coverage
     #
     # @return [Boolean] true or false
     #
@@ -176,7 +177,11 @@ module Availability
       that_start = time.seconds_since_midnight.to_i
       this_start = start_time.seconds_since_midnight.to_i
       this_end   = end_time.seconds_since_midnight.to_i
-      (this_start..this_end).include?(that_start)
+      if end_time > start_time && this_end == this_start
+        # edge case where you start and end at the same time on different days
+        this_end = (end_time - 1.second).seconds_since_midnight.to_i
+      end
+      (this_start...this_end).include?(that_start)
     end
 
     # @!endgroup

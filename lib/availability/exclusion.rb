@@ -1,7 +1,5 @@
 module Availability
   class Exclusion
-    private_class_method :new # :nodoc:
-
     def self.after_day(date)
       raise ArgumentError, "invalid date" if date.nil?
       new Rule::AfterDate.new(date.to_date)

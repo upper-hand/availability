@@ -20,7 +20,7 @@ There are a few convenience factory methods beyond the main factory methods:
   - `Availability.every_two_{days,weeks,months,years}` and `Availability.every_other_{day,week,month,year}` will create the appropriate availability with an interval of 2
   - There are other `every_*` factory methods for intervals of 3, 4, and 5 (e.g. `every_three_months`)
 
-## Primary API
+## Basic Usage
 
 ### [#occurs_at?/1][OCCURS_AT]
 This method takes a date or time and responds with a boolean indicating whether or not it is covered by the receiver.
@@ -41,13 +41,59 @@ This returns a single time object for the next occurrence on or after the given 
 
 ```ruby
 # Every other Monday from 9:00 AM to 10:00 AM starting on May 2, 2016
-Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
+every_other_monday = Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
+every_other_monday.occurs_at? Time.new(2016, 5, 30, 9)  # => true
+every_other_monday.occurs_at? Time.new(2016, 5, 30, 10) # => false, because it lasts only an hour
+every_other_monday.occurs_at? Time.new(2016, 5, 23, 9)  # => false, because it's not a covered Monday
+every_other_monday.occurs_at? Time.new(2016, 5, 18, 9)  # => false, because it's not a Monday
 
 # A business week starting on May 2, 2016 going from 1:30 PM until 2:00 PM every day
-Availability.daily(start_time: Time.new(2016, 5, 2, 13, 30), stops_by: Time.new(2016, 5, 6), duration: 30.minutes)
+biz_week = Availability.daily(start_time: Time.new(2016, 5, 2, 13, 30), stops_by: Time.new(2016, 5, 6), duration: 30.minutes)
+
+biz_week.occurs_at? Time.new(2016, 5, 3, 13, 30) #=> true
+biz_week.occurs_at? Time.new(2016, 5, 3, 14, 30) #=> false
+biz_week.occurs_at? Time.new(2016, 5, 6, 13, 30) #=> true
 
 # A semi-monthly availability occurring all day, without an end
-Availability.every_other_month(start_time: Time.new(2016, 1, 1), duration: 1.day)
+every_other_month = Availability.every_other_month(start_time: Time.new(2016, 1, 1), duration: 1.day)
+
+every_other_month.occurs_at? Time.new(2016, 3, 1) #=> true
+every_other_month.occurs_at? Time.new(4037, 7, 1) #=> true
+```
+
+Exclusion rules can be added to an availability to further restrict it. For instance, if you wanted to create an availability for business days that spanned more than a single week you might do something like the following (note that exclusion rules need only to respond to `violated_by?(time)`).
+```ruby
+class NotOnWeekends
+  def violated_by?(time)
+    time.wday == 0 || time.wday == 6
+  end
+end
+
+class OnlyDuringWorkHours
+  EIGHT_AM = Time.new(2016, 1, 1, 8).seconds_since_midnight
+  SIX_PM   = Time.new(2016, 1, 1, 17).seconds_since_midnight
+
+  def violated_by?(time)
+    !(EIGHT_AM...SIX_PM).include?(time.to_time.seconds_since_midnight)
+  end
+end
+
+class BusinessDay
+  def initialize
+    @not_on_weekends = NotOnWeekends.new
+    @only_during_work_hours = OnlyDuringWorkHours.new
+  end
+
+  def violated_by?(time)
+    @not_on_weekends.violated_by?(time) || @only_during_work_hours.violated_by?(time)
+  end
+end
+
+business_days = Availability.daily(
+  start_time: Time.new(2016, 1, 1),
+  duration: 24.hours,
+  exclusions: [Availability::Exclusion.new(BusinessDay.new)]
+)
 ```
 
 ## TODO

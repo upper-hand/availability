@@ -71,19 +71,8 @@ RSpec.describe Scheduler do
     end
 
     describe '#allow?' do
-      context 'enforces parameter values' do
-        it { expect{bobs_schedule.allow?}.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? availability_request: nil}.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? start_time: nil }.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? start_time: Date.today }.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? end_time: nil }.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? end_time: Date.today }.to raise_error ArgumentError }
-        it { expect{bobs_schedule.allow? availability_request: one_hour_slot_per_week(start_time: T(0))}.not_to raise_error }
-        it { expect{bobs_schedule.allow? start_time: Date.today, end_time: Date.tomorrow}.not_to raise_error }
-      end
-
       context 'with Availability objects' do
-        it 'allows an event requests that start in the first week and go through the end of the availability' do
+        it 'allows an event request that starts in the first week and goes through the end of the availability' do
           bob_availabilities.each do |a|
             expect(bobs_schedule.allow? availability_request: a).to be_truthy, "at #{a.start_time}"
           end

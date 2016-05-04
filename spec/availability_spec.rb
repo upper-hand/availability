@@ -10,6 +10,32 @@ module AvailabilitySpecHelpers
   def beginning
     Availability.beginning.to_time
   end
+
+  class NotOnWeekendsRule
+    def violated_by?(time)
+      time.wday == 0 || time.wday == 6
+    end
+  end
+
+  class OnlyDuringWorkHoursRule
+    EIGHT_AM = Time.new(2016, 1, 1, 8).seconds_since_midnight
+    SIX_PM   = Time.new(2016, 1, 1, 17).seconds_since_midnight
+
+    def violated_by?(time)
+      !(EIGHT_AM...SIX_PM).include?(time.to_time.seconds_since_midnight)
+    end
+  end
+
+  class BusinessDayRule
+    def initialize
+      @not_on_weekends = NotOnWeekendsRule.new
+      @only_during_work_hours = OnlyDuringWorkHoursRule.new
+    end
+
+    def violated_by?(time)
+      @not_on_weekends.violated_by?(time) || @only_during_work_hours.violated_by?(time)
+    end
+  end
 end
 
 RSpec.describe Availability do
@@ -292,6 +318,16 @@ RSpec.describe Availability do
   end
 
   describe '#occurs_at?' do
+    context 'comparing times' do
+      let(:every_other_monday) do
+        Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
+      end
+
+      it 'should not include the start of the following hour for a one-hour availability' do
+        expect(every_other_monday.occurs_at? Time.new(2016, 5, 30, 10)).to be_falsey
+      end
+    end
+
     context 'when the frequency is daily' do
       context 'when the availability is biweekly and starts 5 days after the beginning' do
         let(:availability) { Availability.create(duration: 45.minutes, interval: 14, start_time: beginning + 5.days) }
@@ -546,6 +582,23 @@ RSpec.describe Availability do
 
         it 'stops after the 3rd day after July 4th' do
           expect(availability.next_occurrence(the_third_day_after + 1.day)).to be nil
+        end
+
+        context 'modeling business days' do
+          let(:business_days) do
+            Availability.daily(
+              start_time: Time.new(2016, 1, 1),
+              duration: 24.hours,
+              exclusions: [Availability::Exclusion.new(AvailabilitySpecHelpers::BusinessDayRule.new)]
+            )
+          end
+          let(:monday_at_10_am) do
+            Time.new(2016, 5, 2, 10)
+          end
+
+          it 'occurs during normal business hours' do
+            expect(business_days.occurs_at? monday_at_10_am).to be_truthy
+          end
         end
       end
 
