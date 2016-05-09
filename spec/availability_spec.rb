@@ -226,7 +226,7 @@ RSpec.describe Availability do
       it 'stops after one occurrence' do
         availability = Availability.once start_time: Date.today, duration: 30.minutes
         expect(availability.last_occurrence).to eq Date.today.to_time
-        expect(availability.occurs_at? availability.start_time).to be_truthy
+        expect(availability.includes? availability.start_time).to be_truthy
       end
     end
 
@@ -238,8 +238,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -250,8 +250,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -262,8 +262,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -274,8 +274,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -286,8 +286,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -298,8 +298,8 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
 
@@ -310,21 +310,21 @@ RSpec.describe Availability do
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
 
-        it 'expects occurs_at?(last_occurrence) to be true' do
-          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        it 'expects includes?(last_occurrence) to be true' do
+          expect(subject.includes? subject.last_occurrence).to be_truthy
         end
       end
     end
   end
 
-  describe '#occurs_at?' do
+  describe '#includes?' do
     context 'comparing times' do
       let(:every_other_monday) do
         Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
       end
 
       it 'should not include the start of the following hour for a one-hour availability' do
-        expect(every_other_monday.occurs_at? Time.new(2016, 5, 30, 10)).to be_falsey
+        expect(every_other_monday.includes? Time.new(2016, 5, 30, 10)).to be_falsey
       end
     end
 
@@ -333,27 +333,27 @@ RSpec.describe Availability do
         let(:availability) { Availability.create(duration: 45.minutes, interval: 14, start_time: beginning + 5.days) }
 
         it 'occurs on its start date' do
-          expect(availability.occurs_at?(beginning + 5.days)).to be_truthy
+          expect(availability.includes?(beginning + 5.days)).to be_truthy
         end
 
         it 'occurs on its next occurrence' do
-          expect(availability.occurs_at?(beginning + 5.days + 14.days)).to be_truthy
+          expect(availability.includes?(beginning + 5.days + 14.days)).to be_truthy
         end
 
         it 'does not occur on the day after its next occurrence' do
-          expect(availability.occurs_at?(beginning + 5.days + 15.days)).to be_falsey
+          expect(availability.includes?(beginning + 5.days + 15.days)).to be_falsey
         end
 
         it 'occurs during the duration' do
-          expect(availability.occurs_at?(beginning + 5.days + 15.minutes)).to be_truthy
+          expect(availability.includes?(beginning + 5.days + 15.minutes)).to be_truthy
         end
 
         it 'does not occur before the duration' do
-          expect(availability.occurs_at?(beginning + 5.days - 1.minute)).to be_falsey
+          expect(availability.includes?(beginning + 5.days - 1.minute)).to be_falsey
         end
 
         it 'does not occur after the duration' do
-          expect(availability.occurs_at?(beginning + 5.days + 46.minutes)).to be_falsey
+          expect(availability.includes?(beginning + 5.days + 46.minutes)).to be_falsey
         end
       end
 
@@ -361,15 +361,15 @@ RSpec.describe Availability do
         let(:availability) { Availability.create(duration: 45.minutes, interval: 30, start_time: beginning + 11.days) }
 
         it 'occurs on its start date' do
-          expect(availability.occurs_at?(beginning + 11.days)).to be_truthy
+          expect(availability.includes?(beginning + 11.days)).to be_truthy
         end
 
         it 'occurs on its next occurrence' do
-          expect(availability.occurs_at?(beginning + 11.days + 30.days)).to be_truthy
+          expect(availability.includes?(beginning + 11.days + 30.days)).to be_truthy
         end
 
         it 'does not occur on the day before its next occurrence' do
-          expect(availability.occurs_at?(beginning + 11.days + 29.days)).to be_falsey
+          expect(availability.includes?(beginning + 11.days + 29.days)).to be_falsey
         end
       end
 
@@ -381,10 +381,10 @@ RSpec.describe Availability do
 
         common_date = Time.new(1970, 2, 20)
 
-        expect(availability_1.occurs_at?(common_date)).to be_truthy
-        expect(availability_2.occurs_at?(common_date)).to be_truthy
-        expect(availability_3.occurs_at?(common_date)).to be_truthy
-        expect(availability_4.occurs_at?(common_date)).to be_falsey
+        expect(availability_1.includes?(common_date)).to be_truthy
+        expect(availability_2.includes?(common_date)).to be_truthy
+        expect(availability_3.includes?(common_date)).to be_truthy
+        expect(availability_4.includes?(common_date)).to be_falsey
       end
     end
 
@@ -394,16 +394,16 @@ RSpec.describe Availability do
         let(:availability) { Availability.weekly(duration: 45.minutes, start_time: start_time) }
 
         it 'occurs on its start date' do
-          expect(availability.occurs_at?(start_time)).to be_truthy
+          expect(availability.includes?(start_time)).to be_truthy
         end
 
         it 'occurs on its next occurrence' do
-          expect(availability.occurs_at?(start_time + 1.week)).to be_truthy
+          expect(availability.includes?(start_time + 1.week)).to be_truthy
         end
 
         it 'does not occur on another day of the week' do
           (1..6).each do |i|
-            expect(availability.occurs_at?(start_time + i.days)).to be_falsey
+            expect(availability.includes?(start_time + i.days)).to be_falsey
           end
         end
       end
@@ -414,15 +414,15 @@ RSpec.describe Availability do
         let(:availability) { Availability.create(duration: 45.minutes, frequency: :monthly, interval: 3, start_time: beginning + 2.months) }
 
         it 'occurs on its start date' do
-          expect(availability.occurs_at?(beginning + 2.months)).to be_truthy
+          expect(availability.includes?(beginning + 2.months)).to be_truthy
         end
 
         it 'occurs on its next occurrence' do
-          expect(availability.occurs_at?(beginning + 2.months + 3.months)).to be_truthy
+          expect(availability.includes?(beginning + 2.months + 3.months)).to be_truthy
         end
 
         it 'does not occur on the month after its next occurrence' do
-          expect(availability.occurs_at?(beginning + 2.months + 4.months)).to be_falsey
+          expect(availability.includes?(beginning + 2.months + 4.months)).to be_falsey
         end
       end
     end
@@ -432,15 +432,15 @@ RSpec.describe Availability do
         let(:availability) { Availability.create(duration: 2.hours, frequency: :yearly, interval: 2, start_time: beginning + 1.year) }
 
         it 'occurs on its start date' do
-          expect(availability.occurs_at?(beginning + 1.year)).to be_truthy
+          expect(availability.includes?(beginning + 1.year)).to be_truthy
         end
 
         it 'occurs on its next occurrence' do
-          expect(availability.occurs_at?(beginning + 1.year + 2.years)).to be_truthy
+          expect(availability.includes?(beginning + 1.year + 2.years)).to be_truthy
         end
 
         it 'does not occur on the month after its next occurrence' do
-          expect(availability.occurs_at?(beginning + 1.year + 3.years)).to be_falsey
+          expect(availability.includes?(beginning + 1.year + 3.years)).to be_falsey
         end
       end
     end
@@ -597,15 +597,15 @@ RSpec.describe Availability do
           let(:after_time) { Time.new(2091, 8, 13, 19) }
 
           it 'occurs during normal business hours' do
-            expect(business_days.occurs_at? monday_at_10_am).to be_truthy
+            expect(business_days.includes? monday_at_10_am).to be_truthy
           end
 
           it 'does not occur before normal business hours' do
-            expect(business_days.occurs_at? before_time).to be_falsey
+            expect(business_days.includes? before_time).to be_falsey
           end
 
           it 'does not occur after normal business hours' do
-            expect(business_days.occurs_at? after_time).to be_falsey
+            expect(business_days.includes? after_time).to be_falsey
           end
         end
       end

@@ -51,13 +51,13 @@ module Availability
     # @return [Boolean] true or false
     #
     def corresponds_to?(availability)
-      return false unless occurs_at?(availability.start_time) \
-        && occurs_at?(availability.start_time + availability.duration - 1.second)
+      return false unless includes?(availability.start_time) \
+        && includes?(availability.start_time + availability.duration - 1.second)
       if !!stops_by
         that_last = availability.last_occurrence
         !that_last.nil? \
-          && occurs_at?(that_last) \
-          && occurs_at?(that_last + availability.duration - 1.second) \
+          && includes?(that_last) \
+          && includes?(that_last + availability.duration - 1.second) \
           && that_last.to_date <= self.last_occurrence.to_date
       else
         true
@@ -71,7 +71,7 @@ module Availability
     #
     # @return [Boolean] true or false
     #
-    def occurs_at?(time)
+    def includes?(time)
       next_occurrence = next_occurrence(time) || last_occurrence
       residue_for(time) == @residue \
         && !next_occurrence.nil? \

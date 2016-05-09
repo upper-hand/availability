@@ -14,7 +14,7 @@ module Availability
       time + amount.hours
     end
 
-    def occurs_at?(time)
+    def includes?(time)
       return true if super
       return false if residue_for(time) != residue
       hours_on_same_day = next_n_occurrences(24, time).select {|t| t.wday == time.wday && t <= time }

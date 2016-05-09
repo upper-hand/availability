@@ -42,23 +42,23 @@ This returns a single time object for the next occurrence on or after the given 
 ```ruby
 # Every other Monday from 9:00 AM to 10:00 AM starting on May 2, 2016
 every_other_monday = Availability.every_other_week(start_time: Time.new(2016, 5, 2, 9), duration: 1.hour)
-every_other_monday.occurs_at? Time.new(2016, 5, 30, 9)  # => true
-every_other_monday.occurs_at? Time.new(2016, 5, 30, 10) # => false, because it lasts only an hour
-every_other_monday.occurs_at? Time.new(2016, 5, 23, 9)  # => false, because it's not a covered Monday
-every_other_monday.occurs_at? Time.new(2016, 5, 18, 9)  # => false, because it's not a Monday
+every_other_monday.includes? Time.new(2016, 5, 30, 9)  # => true
+every_other_monday.includes? Time.new(2016, 5, 30, 10) # => false, because it lasts only an hour
+every_other_monday.includes? Time.new(2016, 5, 23, 9)  # => false, because it's not a covered Monday
+every_other_monday.includes? Time.new(2016, 5, 18, 9)  # => false, because it's not a Monday
 
 # A business week starting on May 2, 2016 going from 1:30 PM until 2:00 PM every day
 biz_week = Availability.daily(start_time: Time.new(2016, 5, 2, 13, 30), stops_by: Time.new(2016, 5, 6), duration: 30.minutes)
 
-biz_week.occurs_at? Time.new(2016, 5, 3, 13, 30) #=> true
-biz_week.occurs_at? Time.new(2016, 5, 3, 14, 30) #=> false
-biz_week.occurs_at? Time.new(2016, 5, 6, 13, 30) #=> true
+biz_week.includes? Time.new(2016, 5, 3, 13, 30) #=> true
+biz_week.includes? Time.new(2016, 5, 3, 14, 30) #=> false
+biz_week.includes? Time.new(2016, 5, 6, 13, 30) #=> true
 
 # A semi-monthly availability occurring all day, without an end
 every_other_month = Availability.every_other_month(start_time: Time.new(2016, 1, 1), duration: 1.day)
 
-every_other_month.occurs_at? Time.new(2016, 3, 1) #=> true
-every_other_month.occurs_at? Time.new(4037, 7, 1) #=> true
+every_other_month.includes? Time.new(2016, 3, 1) #=> true
+every_other_month.includes? Time.new(4037, 7, 1) #=> true
 ```
 
 Exclusion rules can be added to an availability to further restrict it. For instance, if you wanted to create an availability for business days that spanned more than a single week you might do something like the following (note that exclusion rules need only to respond to `violated_by?(time)`).
@@ -85,10 +85,10 @@ business_days = Availability.daily(
   exclusions: [Availability::Exclusion.new(BusinessDayRule.new)]
 )
 
-business_days.occurs_at? Time.new(2016, 5, 2, 8)  #=> true
-business_days.occurs_at? Time.new(2016, 5, 2, 10) #=> true
-business_days.occurs_at? Time.new(2016, 5, 2, 7)  #=> false
-business_days.occurs_at? Time.new(2016, 5, 2, 18) #=> false
+business_days.includes? Time.new(2016, 5, 2, 8)  #=> true
+business_days.includes? Time.new(2016, 5, 2, 10) #=> true
+business_days.includes? Time.new(2016, 5, 2, 7)  #=> false
+business_days.includes? Time.new(2016, 5, 2, 18) #=> false
 ```
 
 ## TODO

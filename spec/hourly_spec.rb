@@ -81,7 +81,7 @@ RSpec.describe Availability do
     end
   end
 
-  describe '#occurs_at?' do
+  describe '#includes?' do
     let(:availabilities) {[
       Availability.hourly(duration: 90.minutes, interval: 2, start_time: beginning),
       Availability.hourly(duration: 90.minutes, interval: 2, start_time: beginning + 2.hours),
@@ -94,14 +94,14 @@ RSpec.describe Availability do
       context 'but would finish on time' do
         it 'occurs' do
           (1..15).each do |offset|
-            expect(availabilities.first.occurs_at?(beginning + offset.minutes)).to be_truthy
+            expect(availabilities.first.includes?(beginning + offset.minutes)).to be_truthy
           end
         end
       end
 
       context 'and would not finish on time' do
         it 'occurs' do
-          expect(availabilities.first.occurs_at?(beginning + 16.minutes)).to be_truthy
+          expect(availabilities.first.includes?(beginning + 16.minutes)).to be_truthy
         end
       end
     end
