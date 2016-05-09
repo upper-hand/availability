@@ -1,43 +1,3 @@
-module AvailabilitySpecHelpers
-  def residues(availabilities)
-    availabilities.map(&:residue)
-  end
-
-  def unique_residues(availabilities)
-    availabilities.map(&:residue).uniq
-  end
-
-  def beginning
-    Availability.beginning.to_time
-  end
-
-  class NotOnWeekendsRule
-    def violated_by?(time)
-      time.wday == 0 || time.wday == 6
-    end
-  end
-
-  class OnlyDuringWorkHoursRule
-    EIGHT_AM = Time.new(2016, 1, 1, 8).seconds_since_midnight
-    SIX_PM   = Time.new(2016, 1, 1, 17).seconds_since_midnight
-
-    def violated_by?(time)
-      !(EIGHT_AM...SIX_PM).include?(time.to_time.seconds_since_midnight)
-    end
-  end
-
-  class BusinessDayRule
-    def initialize
-      @not_on_weekends = NotOnWeekendsRule.new
-      @only_during_work_hours = OnlyDuringWorkHoursRule.new
-    end
-
-    def violated_by?(time)
-      @not_on_weekends.violated_by?(time) || @only_during_work_hours.violated_by?(time)
-    end
-  end
-end
-
 RSpec.describe Availability do
   include AvailabilitySpecHelpers
 
@@ -50,14 +10,14 @@ RSpec.describe Availability do
 
     context 'concrete classes:' do
       let (:args) { {duration: 1.hour, interval: 1, start_time: Date.today} }
-      %w{ Once Daily Weekly Monthly Yearly }.each do |subclass_name|
+      %w{ Once Hourly Daily Weekly Monthly Yearly }.each do |subclass_name|
         it "allows #{subclass_name} to be instantiated" do
           expect { Availability.const_get(subclass_name).new **args }.not_to raise_error
         end
       end
     end
 
-    context 'daily frequency' do
+    context 'one-time frequency' do
       subject { Availability.once(duration: 15.minutes, start_time: Date.tomorrow) }
 
       its(:interval) { should eq(0) }
@@ -65,8 +25,24 @@ RSpec.describe Availability do
       its(:duration) { should eq(15.minutes) }
     end
 
-    context 'daily frequency' do
+    context 'hourly frequency' do
+      subject { Availability.hourly(duration: 30.minutes, start_time: Date.tomorrow) }
+
+      its(:interval) { should eq(1) }
+      its(:start_time) { should eq(Date.tomorrow.to_time) }
+      its(:duration) { should eq(30.minutes) }
+    end
+
+    context 'defaults to daily frequency' do
       subject { Availability.create(duration: 15.minutes, interval: 4, start_time: Date.tomorrow) }
+
+      its(:interval) { should eq(4) }
+      its(:start_time) { should eq(Date.tomorrow.to_time) }
+      its(:duration) { should eq(15.minutes) }
+    end
+
+    context 'daily frequency, every 4 days' do
+      subject { Availability.daily(duration: 15.minutes, interval: 4, start_time: Date.tomorrow) }
 
       its(:interval) { should eq(4) }
       its(:start_time) { should eq(Date.tomorrow.to_time) }
@@ -98,7 +74,7 @@ RSpec.describe Availability do
     end
 
     context 'every two|three|four|five factories' do
-      {days: :daily, weeks: :weekly, months: :monthly, years: :yearly}.each do | factory_suffix, frequency |
+      {hours: :hourly, days: :daily, weeks: :weekly, months: :monthly, years: :yearly}.each do | factory_suffix, frequency |
         {two: 2, three: 3, four: 4, five: 5}.each do | name, interval |
           it "#every_#{name}_#{factory_suffix}" do
             event = Availability.send("every_#{name}_#{factory_suffix}", duration: 1.hour, start_time: Date.today)
@@ -111,7 +87,7 @@ RSpec.describe Availability do
     end
 
     context 'every_other_* factories' do
-      {day: :daily, week: :weekly, month: :monthly, year: :yearly}.each do | factory_suffix, frequency |
+      {hour: :hourly, day: :daily, week: :weekly, month: :monthly, year: :yearly}.each do | factory_suffix, frequency |
         it "#every_other_#{factory_suffix}" do
           availability = Availability.send("every_other_#{factory_suffix}", duration: 1.hour, start_time: Date.today)
           expect(availability.interval).to eq( frequency == :weekly ? 14 : 2 )
@@ -250,11 +226,7 @@ RSpec.describe Availability do
       it 'stops after one occurrence' do
         availability = Availability.once start_time: Date.today, duration: 30.minutes
         expect(availability.last_occurrence).to eq Date.today.to_time
-      end
-
-      it 'creates one time availabilities' do
-        availability = Availability.create frequency: :once, start_time: Date.yesterday, duration: 30.minutes
-        expect(availability.class).to eq Availability::Once
+        expect(availability.occurs_at? availability.start_time).to be_truthy
       end
     end
 
@@ -265,6 +237,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'weekly stops on same date as expected last occurrence' do
@@ -273,6 +249,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'weekly stops by some point in a different residue class' do
@@ -281,6 +261,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'monthly stops on same date as expected last occurrence' do
@@ -289,6 +273,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'monthly stops by some point in a different residue class' do
@@ -297,6 +285,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'yearly stops on same date as expected last occurrence' do
@@ -305,6 +297,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
 
       context 'yearly stops by some point in a different residue class' do
@@ -313,6 +309,10 @@ RSpec.describe Availability do
 
         its(:last_occurrence) { should_not be_nil }
         its(:last_occurrence) { should eq expected_last_occurrence }
+
+        it 'expects occurs_at?(last_occurrence) to be true' do
+          expect(subject.occurs_at? subject.last_occurrence).to be_truthy
+        end
       end
     end
   end
@@ -586,18 +586,26 @@ RSpec.describe Availability do
 
         context 'modeling business days' do
           let(:business_days) do
-            Availability.daily(
-              start_time: Time.new(2016, 1, 1),
-              duration: 24.hours,
+            Availability.hourly(
+              start_time: Time.new(2016, 1, 1, 8),
+              duration: 1.hour,
               exclusions: [Availability::Exclusion.new(AvailabilitySpecHelpers::BusinessDayRule.new)]
             )
           end
-          let(:monday_at_10_am) do
-            Time.new(2016, 5, 2, 10)
-          end
+          let(:monday_at_10_am) { Time.new(2016, 5, 2, 10) }
+          let(:before_time) { Time.new(2023, 2, 23, 7) }
+          let(:after_time) { Time.new(2091, 8, 13, 19) }
 
           it 'occurs during normal business hours' do
             expect(business_days.occurs_at? monday_at_10_am).to be_truthy
+          end
+
+          it 'does not occur before normal business hours' do
+            expect(business_days.occurs_at? before_time).to be_falsey
+          end
+
+          it 'does not occur after normal business hours' do
+            expect(business_days.occurs_at? after_time).to be_falsey
           end
         end
       end

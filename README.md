@@ -22,7 +22,7 @@ There are a few convenience factory methods beyond the main factory methods:
 
 ## Basic Usage
 
-### [#occurs_at?/1][OCCURS_AT]
+### [#includes?/1][INCLUDES]
 This method takes a date or time and responds with a boolean indicating whether or not it is covered by the receiver.
 
 ### [#corresponds_to?/1][CORRESPONDS_TO]
@@ -63,37 +63,32 @@ every_other_month.occurs_at? Time.new(4037, 7, 1) #=> true
 
 Exclusion rules can be added to an availability to further restrict it. For instance, if you wanted to create an availability for business days that spanned more than a single week you might do something like the following (note that exclusion rules need only to respond to `violated_by?(time)`).
 ```ruby
-class NotOnWeekends
-  def violated_by?(time)
-    time.wday == 0 || time.wday == 6
-  end
-end
-
-class OnlyDuringWorkHours
-  EIGHT_AM = Time.new(2016, 1, 1, 8).seconds_since_midnight
-  SIX_PM   = Time.new(2016, 1, 1, 17).seconds_since_midnight
-
-  def violated_by?(time)
-    !(EIGHT_AM...SIX_PM).include?(time.to_time.seconds_since_midnight)
-  end
-end
-
-class BusinessDay
+class BusinessDayRule
   def initialize
-    @not_on_weekends = NotOnWeekends.new
-    @only_during_work_hours = OnlyDuringWorkHours.new
+    @not_on_sunday = Availability::Exclusion.on_day_of_week(0)
+    @not_on_saturday = Availability::Exclusion.on_day_of_week(6)
+    @after_work_hours = Availability::Exclusion.after_time(Time.parse('18:00'))
+    @before_work_hours = Availability::Exclusion.before_time(Time.parse('08:00'))
   end
 
   def violated_by?(time)
-    @not_on_weekends.violated_by?(time) || @only_during_work_hours.violated_by?(time)
+    @not_on_saturday.violated_by?(time) ||
+      @not_on_sunday.violated_by?(time) ||
+      @after_work_hours.violated_by?(time) ||
+      @before_work_hours.violated_by?(time)
   end
 end
 
 business_days = Availability.daily(
-  start_time: Time.new(2016, 1, 1),
-  duration: 24.hours,
-  exclusions: [Availability::Exclusion.new(BusinessDay.new)]
+  start_time: Time.new(2016, 1, 1, 8),
+  duration: 1.hour,
+  exclusions: [Availability::Exclusion.new(BusinessDayRule.new)]
 )
+
+business_days.occurs_at? Time.new(2016, 5, 2, 8)  #=> true
+business_days.occurs_at? Time.new(2016, 5, 2, 10) #=> true
+business_days.occurs_at? Time.new(2016, 5, 2, 7)  #=> false
+business_days.occurs_at? Time.new(2016, 5, 2, 18) #=> false
 ```
 
 ## TODO
@@ -135,7 +130,7 @@ see <http://unlicense.org/> or the accompanying [UNLICENSE]{UNLICENSE} file.
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
 [DOCS]:             http://www.rubydoc.info/gems/availability
-[OCCURS_AT]:        http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#occurs_at%3F-instance_method
+[INCLUDES]:         http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#includes%3F-instance_method
 [CORRESPONDS_TO]:   http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#corresponds_to%3F-instance_method
 [LAST_OCCURRENCE]:  http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#last_occurrence-instance_method
 [NEXT_N_OCCURS]:    http://www.rubydoc.info/gems/availability/Availability/AbstractAvailability#next_n_occurrences-instance_method

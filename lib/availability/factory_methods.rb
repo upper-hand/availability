@@ -10,7 +10,7 @@ module Availability
       Once.create **args
     end
 
-    %w{day week month year}.each do |suffix|
+    %w{hour day week month year}.each do |suffix|
       frequency = suffix == 'day' ? :daily : :"#{suffix}ly"
       cls = Availability::subclass_for(frequency)
 

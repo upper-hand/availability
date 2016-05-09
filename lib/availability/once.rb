@@ -22,6 +22,10 @@ module Availability
       start_time
     end
 
+    def next_occurrence(time)
+      start_time
+    end
+
     def residue_for(time)
       0
     end

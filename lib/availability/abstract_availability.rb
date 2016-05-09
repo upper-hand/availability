@@ -72,7 +72,10 @@ module Availability
     # @return [Boolean] true or false
     #
     def occurs_at?(time)
-      residue_for(time) == @residue && time_overlaps?(time, start_time, start_time + duration)
+      next_occurrence = next_occurrence(time) || last_occurrence
+      residue_for(time) == @residue \
+        && !next_occurrence.nil? \
+        && time_overlaps?(time, next_occurrence, next_occurrence + duration)
     end
 
     # @!endgroup
@@ -106,7 +109,7 @@ module Availability
       residue = @residue - residue_for(from_date)
       date = move_by from_date, residue.modulo(interval)
       time = Time.new(date.year, date.month, date.day, start_time.hour, start_time.min, start_time.sec)
-      if exclusions.any? {|rule| rule.violated_by? time}
+      if (exx = exclusions.detect {|rule| rule.violated_by? time})
         if stops_by && time > stops_by
           nil
         else
@@ -174,13 +177,9 @@ module Availability
     # @!group Helpers
 
     def time_overlaps?(time, start_time, end_time)
-      that_start = time.seconds_since_midnight.to_i
-      this_start = start_time.seconds_since_midnight.to_i
-      this_end   = end_time.seconds_since_midnight.to_i
-      if end_time > start_time && this_end == this_start
-        # edge case where you start and end at the same time on different days
-        this_end = (end_time - 1.second).seconds_since_midnight.to_i
-      end
+      that_start = time.to_i
+      this_start = start_time.to_i
+      this_end   = end_time.to_i
       (this_start...this_end).include?(that_start)
     end
 

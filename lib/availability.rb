@@ -4,6 +4,7 @@ require_relative "availability/version"
 require_relative 'availability/createable'
 require_relative 'availability/exclusion'
 require_relative 'availability/abstract_availability'
+require_relative 'availability/hourly'
 require_relative 'availability/daily'
 require_relative 'availability/weekly'
 require_relative 'availability/monthly'

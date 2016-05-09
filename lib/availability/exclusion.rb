@@ -1,8 +1,15 @@
 module Availability
   class Exclusion
+    attr_reader :rule
+
     def self.after_day(date)
       raise ArgumentError, "invalid date" if date.nil?
       new Rule::AfterDate.new(date.to_date)
+    end
+
+    def self.after_date_and_time(time)
+      raise ArgumentError, "invalid time" if time.nil?
+      new Rule::AfterDateAndTime.new(time.to_time)
     end
 
     def self.after_time(time)
@@ -20,9 +27,21 @@ module Availability
       new Rule::BeforeDate.new(date.to_date)
     end
 
+    def self.before_date_and_time(time)
+      raise ArgumentError, "invalid time" if time.nil?
+      new Rule::BeforeDateAndTime.new(time.to_time)
+    end
+
     def self.before_time(time)
       raise ArgumentError, "invalid time" if time.nil?
       new Rule::BeforeTime.new(time.to_time)
+    end
+
+    def self.on_day_of_week(day_of_week) # 0=Sunday, 6=Saturday
+      unless day_of_week.is_a?(Fixnum) && (0..6).include?(day_of_week)
+        raise ArgumentError, "invalid day of week"
+      end
+      new Rule::OnDayOfWeek.new(day_of_week)
     end
 
     def initialize(rule)
@@ -42,6 +61,17 @@ module Availability
 
         def violated_by?(time)
           time.to_date > @date
+        end
+      end
+
+      class AfterDateAndTime
+        def initialize(time)
+          @after_date = AfterDate.new time.to_date
+          @after_time = AfterTime.new time
+        end
+
+        def violated_by?(time)
+          @after_date.violated_by?(time) || @after_time.violated_by?(time)
         end
       end
 
@@ -65,6 +95,17 @@ module Availability
         end
       end
 
+      class BeforeDateAndTime
+        def initialize(time)
+          @before_date = BeforeDate.new time.to_date
+          @before_time = BeforeTime.new time
+        end
+
+        def violated_by?(time)
+          @before_date.violated_by?(time) || @before_time.violated_by?(time)
+        end
+      end
+
       class BeforeTime
         def initialize(date_or_time)
           @compare_to = date_or_time.to_time
@@ -82,6 +123,16 @@ module Availability
 
         def violated_by?(time)
           time.to_date == @date
+        end
+      end
+
+      class OnDayOfWeek
+        def initialize(day_of_week)
+          @day_of_week = day_of_week
+        end
+
+        def violated_by?(time)
+          time.wday == @day_of_week
         end
       end
     end

@@ -46,3 +46,33 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 end
+
+module AvailabilitySpecHelpers
+  def residues(availabilities)
+    availabilities.map(&:residue)
+  end
+
+  def unique_residues(availabilities)
+    availabilities.map(&:residue).uniq
+  end
+
+  def beginning
+    Availability.beginning.to_time
+  end
+
+  class BusinessDayRule
+    def initialize
+      @not_on_sunday = Availability::Exclusion.on_day_of_week(0)
+      @not_on_saturday = Availability::Exclusion.on_day_of_week(6)
+      @after_work_hours = Availability::Exclusion.after_time(Time.parse('18:00'))
+      @before_work_hours = Availability::Exclusion.before_time(Time.parse('08:00'))
+    end
+
+    def violated_by?(time)
+      @not_on_saturday.violated_by?(time) ||
+        @not_on_sunday.violated_by?(time) ||
+        @after_work_hours.violated_by?(time) ||
+        @before_work_hours.violated_by?(time)
+    end
+  end
+end
