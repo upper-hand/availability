@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email                 = ["jacaetevha@gmail.com"]
 
   spec.summary               = %q{Calculating schedule availability}
-  spec.description           = %q{Use modular arithmetic and residue classes to calculate schedule availability for dates (times handled separately).}
+  spec.description           = %q{Use modular arithmetic and residue classes to calculate schedule availability for dates and times.}
   spec.homepage              = "https://github.com/upper-hand/availability"
   spec.license               = "Unlicense"
   spec.required_ruby_version = '>= 2.0'
