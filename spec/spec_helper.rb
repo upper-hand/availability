@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'rspec/its'
 require 'schedulability'
+require 'yaml'
+require 'support/instance_variable_comparability_behavior'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

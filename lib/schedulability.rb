@@ -1,6 +1,7 @@
 require 'active_support'
 require 'active_support/core_ext'
-require_relative "schedulability/version"
+require_relative 'schedulability/version'
+require_relative 'schedulability/instance_variable_comparability'
 require_relative 'schedulability/createable'
 require_relative 'schedulability/exclusion'
 require_relative 'schedulability/availability'

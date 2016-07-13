@@ -97,6 +97,60 @@ RSpec.describe Schedulability do
     end
   end
 
+  describe 'serialization' do
+    let(:availability_factory) do
+      lambda do |suffix|
+        Schedulability.send("every_other_#{suffix}", duration: 1.hour, start_time: Date.today)
+      end
+    end
+    let(:availabilities) do
+      {
+        hour:  availability_factory[:hour],
+        day:   availability_factory[:day],
+        week:  availability_factory[:week],
+        month: availability_factory[:month],
+        year:  availability_factory[:year]
+      }
+    end
+
+    include_examples 'InstanceVariableComparability#<=>' do
+      let(:factory) { lambda { |hash| Schedulability.every_other_hour **hash } }
+      let(:args_array_for_instance_a) { args_array_for_lesser_instance }
+      let(:args_array_for_instance_b) { args_array_for_greater_instance }
+      let(:args_array_for_lesser_instance) { [{duration: 1.hour, start_time: Date.today}] }
+      let(:args_array_for_greater_instance) { [{duration: 1.hour, start_time: Date.tomorrow}] }
+    end
+
+    include_examples 'InstanceVariableComparability#==' do
+      let(:factory) { lambda { |hash| Schedulability.every_other_day **hash } }
+      let(:args_array_for_instance_a) { [{duration: 1.hour, start_time: Date.today}] }
+      let(:args_array_for_instance_b) { [{duration: 2.hours, start_time: Date.today}] }
+    end
+
+    it "can be marshalled to YAML" do
+      availabilities.each do |_, availability|
+        yaml = YAML.dump availability
+        expect(yaml).to include "--- !ruby/object:#{availability.class}"
+        expect(yaml).to include "capacity: .inf"
+        expect(yaml).to include "duration: !ruby/object:ActiveSupport::Duration"
+        expect(yaml).to include "stops_by:"
+        expect(yaml).to include "exclusions:"
+        expect(yaml).to include "- !ruby/object:Schedulability::Exclusion"
+        expect(yaml).to include "rule: !ruby/object:Schedulability::Exclusion::Rule::BeforeDate"
+        expect(yaml).to include "rule: !ruby/object:Schedulability::Exclusion::Rule::BeforeTime"
+        expect(yaml).to match /residue: \d+/
+        expect(yaml).to match /interval: \d+/
+        expect(yaml).to match /start_time: [\d\-:\.]{10,}/
+      end
+    end
+
+    it "can be reinstantiated from YAML" do
+      availabilities.each do |suffix, availability|
+        expect(YAML.load(YAML.dump availability)).to eq availability_factory[suffix]
+      end
+    end
+  end
+
   describe '#residue' do
     context 'when the frequency is daily' do
       context 'when interval is weekly' do

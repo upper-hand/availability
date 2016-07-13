@@ -1,5 +1,5 @@
 module Schedulability
-  class Exclusion
+  class Exclusion < InstanceVariableComparability
     attr_reader :rule
 
     def self.after_day(date)
@@ -48,13 +48,18 @@ module Schedulability
       @rule = rule
     end
 
+    def <=>(other)
+      return 1 if other.nil?
+      rule <=> other.rule
+    end
+
     def violated_by?(time)
       @rule.violated_by? time
     end
 
     private
     module Rule
-      class AfterDate
+      class AfterDate < InstanceVariableComparability
         def initialize(date)
           @date = date
         end
@@ -64,7 +69,7 @@ module Schedulability
         end
       end
 
-      class AfterDateAndTime
+      class AfterDateAndTime < InstanceVariableComparability
         def initialize(time)
           @after_date = AfterDate.new time.to_date
           @after_time = AfterTime.new time
@@ -75,7 +80,7 @@ module Schedulability
         end
       end
 
-      class AfterTime
+      class AfterTime < InstanceVariableComparability
         def initialize(date_or_time)
           @compare_to = date_or_time.to_time
         end
@@ -85,7 +90,7 @@ module Schedulability
         end
       end
 
-      class BeforeDate
+      class BeforeDate < InstanceVariableComparability
         def initialize(date)
           @date = date
         end
@@ -95,7 +100,7 @@ module Schedulability
         end
       end
 
-      class BeforeDateAndTime
+      class BeforeDateAndTime < InstanceVariableComparability
         def initialize(time)
           @before_date = BeforeDate.new time.to_date
           @before_time = BeforeTime.new time
@@ -106,7 +111,7 @@ module Schedulability
         end
       end
 
-      class BeforeTime
+      class BeforeTime < InstanceVariableComparability
         def initialize(date_or_time)
           @compare_to = date_or_time.to_time
         end
@@ -116,7 +121,7 @@ module Schedulability
         end
       end
 
-      class OnDate
+      class OnDate < InstanceVariableComparability
         def initialize(date)
           @date = date
         end
@@ -126,7 +131,7 @@ module Schedulability
         end
       end
 
-      class OnDayOfWeek
+      class OnDayOfWeek < InstanceVariableComparability
         def initialize(day_of_week)
           @day_of_week = day_of_week
         end

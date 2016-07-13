@@ -1,6 +1,6 @@
 module Schedulability
   # @abstract see concrete classes: Once, Daily, Weekly, Monthly and Yearly
-  class Availability
+  class Availability < InstanceVariableComparability
     private_class_method :new # :nodoc:
   
     attr_accessor :capacity, :duration, :stops_by
@@ -200,6 +200,12 @@ module Schedulability
     end
 
     # @!endgroup
+
+    protected
+
+    def comparability_ivar_names
+      %w{@capacity @exclusions @stops_by @duration @interval @start_time}
+    end
 
     private
 
