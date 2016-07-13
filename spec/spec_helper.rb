@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'rspec/its'
-require 'schedulability'
+require 'availability'
 require 'yaml'
 require 'support/instance_variable_comparability_behavior'
 
@@ -49,7 +49,7 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-module SchedulabilitySpecHelpers
+module AvailabilitySpecHelpers
   def residues(availabilities)
     availabilities.map(&:residue)
   end
@@ -59,15 +59,15 @@ module SchedulabilitySpecHelpers
   end
 
   def beginning
-    Schedulability.beginning.to_time
+    Availability.beginning.to_time
   end
 
   class BusinessDayRule
     def initialize
-      @not_on_sunday = Schedulability::Exclusion.on_day_of_week(0)
-      @not_on_saturday = Schedulability::Exclusion.on_day_of_week(6)
-      @after_work_hours = Schedulability::Exclusion.after_time(Time.parse('18:00'))
-      @before_work_hours = Schedulability::Exclusion.before_time(Time.parse('08:00'))
+      @not_on_sunday = Availability::Exclusion.on_day_of_week(0)
+      @not_on_saturday = Availability::Exclusion.on_day_of_week(6)
+      @after_work_hours = Availability::Exclusion.after_time(Time.parse('18:00'))
+      @before_work_hours = Availability::Exclusion.before_time(Time.parse('08:00'))
     end
 
     def violated_by?(time)

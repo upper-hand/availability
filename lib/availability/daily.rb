@@ -1,7 +1,7 @@
-require_relative 'availability'
+require_relative 'abstract_availability'
 
-module Schedulability
-  class Daily < Availability
+module Availability
+  class Daily < AbstractAvailability
     extend Createable
 
     def interval_difference(this, that)

@@ -5,7 +5,7 @@ require 'schedulability/version'
 
 Gem::Specification.new do |spec|
   spec.name                  = "schedulability"
-  spec.version               = Schedulability::VERSION
+  spec.version               = Availability::VERSION
   spec.authors               = ["Jason Rogers"]
   spec.email                 = ["jacaetevha@gmail.com"]
 

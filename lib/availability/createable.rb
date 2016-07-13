@@ -1,4 +1,4 @@
-module Schedulability
+module Availability
   module Createable
     def self.extended(base)
       base.public_class_method :new

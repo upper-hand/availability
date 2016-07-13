@@ -1,7 +1,7 @@
-module Schedulability
+module Availability
   module FactoryMethods
     def create(**args)
-      cls = args.delete(:event_class) || Schedulability::subclass_for(args.delete(:frequency) || :daily)
+      cls = args.delete(:event_class) || Availability::subclass_for(args.delete(:frequency) || :daily)
       raise ArgumentError, "undefined frequency" if cls.nil?
       cls.send :new, **args
     end
@@ -12,7 +12,7 @@ module Schedulability
 
     %w{hour day week month year}.each do |suffix|
       frequency = suffix == 'day' ? :daily : :"#{suffix}ly"
-      cls = Schedulability::subclass_for(frequency)
+      cls = Availability::subclass_for(frequency)
 
       define_method frequency do |**args|
         args[:interval] ||= 1 unless args[:interval]

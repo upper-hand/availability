@@ -1,7 +1,7 @@
-require_relative 'availability'
+require_relative 'abstract_availability'
 
-module Schedulability
-  class Weekly < Availability
+module Availability
+  class Weekly < AbstractAvailability
     extend Createable
 
     def interval

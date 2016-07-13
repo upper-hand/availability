@@ -1,3 +1,3 @@
-module Schedulability
+module Availability
   VERSION = "1.0.0"
 end

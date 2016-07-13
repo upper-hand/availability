@@ -1,4 +1,4 @@
-module Schedulability
+module Availability
   class Exclusion < InstanceVariableComparability
     attr_reader :rule
 

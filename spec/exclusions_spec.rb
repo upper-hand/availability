@@ -1,7 +1,7 @@
-RSpec.describe Schedulability::Exclusion do
+RSpec.describe Availability::Exclusion do
   describe '::Rule' do
     include_examples 'InstanceVariableComparability#<=>' do
-      let(:factory) { lambda { |date| Schedulability::Exclusion.after_day(date) } }
+      let(:factory) { lambda { |date| Availability::Exclusion.after_day(date) } }
       let(:args_array_for_instance_a) { args_array_for_lesser_instance }
       let(:args_array_for_instance_b) { args_array_for_greater_instance }
       let(:args_array_for_lesser_instance) { [Date.today] }
@@ -9,13 +9,13 @@ RSpec.describe Schedulability::Exclusion do
     end
 
     include_examples 'InstanceVariableComparability#==' do
-      let(:factory) { lambda { |date| Schedulability::Exclusion.before_day(date) } }
+      let(:factory) { lambda { |date| Availability::Exclusion.before_day(date) } }
       let(:args_array_for_instance_a) { [Date.today] }
       let(:args_array_for_instance_b) { [Date.tomorrow] }
     end
 
     context 'serialization' do
-      let(:factory) { lambda { |date| Schedulability::Exclusion.all_day(date) } }
+      let(:factory) { lambda { |date| Availability::Exclusion.all_day(date) } }
 
       it 'should deserialize to similar object' do
         a = factory[Date.today]

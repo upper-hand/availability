@@ -6,11 +6,11 @@ module SchedulerSpecHelpers
   end
 
   def one_hour_slot_per_week(**args)
-    Schedulability.weekly **args, duration: 1.hour
+    Availability.weekly **args, duration: 1.hour
   end
 
   def half_hour_slot_per_week(**args)
-    Schedulability.weekly **args, duration: 30.minutes
+    Availability.weekly **args, duration: 30.minutes
   end
 end
 
@@ -71,7 +71,7 @@ RSpec.describe Scheduler do
     end
 
     describe '#allow?' do
-      context 'with Schedulability objects' do
+      context 'with Availability objects' do
         it 'allows an event request that starts in the first week and goes through the end of the availability' do
           bob_availabilities.each do |a|
             expect(bobs_schedule.allow? availability_request: a).to be_truthy, "at #{a.start_time}"
