@@ -1,7 +1,7 @@
-require_relative 'abstract_availability'
+require_relative 'availability'
 require_relative 'daily'
 
-module Availability
+module Schedulability
   class Hourly < Daily
     extend Createable
 

@@ -1,7 +1,7 @@
-module Availability
+module Schedulability
   module ClassMethods
     def availability?(thing)
-      AbstractAvailability === thing
+      Availability === thing
     end
 
     def beginning
@@ -13,7 +13,7 @@ module Availability
     end
 
     def subclass_for(frequency)
-      Availability.const_get frequency.to_s.capitalize rescue nil
+      Schedulability.const_get frequency.to_s.capitalize rescue nil
     end
   end
   extend ClassMethods

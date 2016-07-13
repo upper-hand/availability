@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'availability/version'
+require 'schedulability/version'
 
 Gem::Specification.new do |spec|
-  spec.name                  = "availability"
-  spec.version               = Availability::VERSION
+  spec.name                  = "schedulability"
+  spec.version               = Schedulability::VERSION
   spec.authors               = ["Jason Rogers"]
   spec.email                 = ["jacaetevha@gmail.com"]
 

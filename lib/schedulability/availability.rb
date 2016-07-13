@@ -1,6 +1,6 @@
-module Availability
+module Schedulability
   # @abstract see concrete classes: Once, Daily, Weekly, Monthly and Yearly
-  class AbstractAvailability
+  class Availability
     private_class_method :new # :nodoc:
   
     attr_accessor :capacity, :duration, :stops_by

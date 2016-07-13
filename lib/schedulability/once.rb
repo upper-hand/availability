@@ -1,7 +1,7 @@
-require_relative 'abstract_availability'
+require_relative 'availability'
 
-module Availability
-  class Once < AbstractAvailability
+module Schedulability
+  class Once < Availability
     extend Createable
 
     def initialize(**args)

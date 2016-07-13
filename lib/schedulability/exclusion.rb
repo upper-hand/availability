@@ -1,4 +1,4 @@
-module Availability
+module Schedulability
   class Exclusion
     attr_reader :rule
 

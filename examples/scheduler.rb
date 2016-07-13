@@ -1,4 +1,4 @@
-require_relative '../lib/availability'
+require_relative '../lib/schedulability'
 
 #
 # This is just an example of a scheduler that might be used with availabilities. It's a work in
@@ -8,7 +8,7 @@ class Scheduler
   attr_reader :availabilities, :scheduled
 
   #
-  # availabilities: a list of Availability instances defining when the resource is available
+  # availabilities: a list of Schedulability::Availability instances defining when the resource is available
   #
   def initialize(availabilities)
     @availabilities = validate_availabilities availabilities
@@ -17,11 +17,11 @@ class Scheduler
 
   #
   # This method expects either an availability request or a start/end time pair. If the
-  # start/end time pair is offered, this method acts the same as if an Availability::Once
+  # start/end time pair is offered, this method acts the same as if an Schedulability::Once
   # request was offered with the given start_time and a duration going through the given
   # end_time.
   #
-  # availability_request: an Availability instance
+  # availability_request: an Schedulability instance
   # start_time: Time/DateTime representative of a single request starting at that time
   # end_time: Time/DateTime representative of a single request ending at that time
   #
@@ -35,11 +35,11 @@ class Scheduler
 
   #
   # This method expects either an availability request or a start/end time pair. If the
-  # start/end time pair is offered, this method acts the same as if an Availability::Once
+  # start/end time pair is offered, this method acts the same as if an Schedulability::Once
   # request was offered with the given start_time and a duration going through the given
   # end_time.
   #
-  # availability_request: an Availability instance
+  # availability_request: an Schedulability instance
   # start_time: Time/DateTime representative of a single request starting at that time
   # end_time: Time/DateTime representative of a single request ending at that time
   #
@@ -63,7 +63,7 @@ class Scheduler
   def convert(availability_request: nil, start_time: nil, end_time: nil)
     validate_allow_params! availability_request, start_time, end_time
     if availability_request.nil?
-      availability_request = Availability::Once.create(
+      availability_request = Schedulability::Once.create(
         start_time: start_time, duration: (end_time.to_time - start_time.to_time).to_i)
     else
       availability_request
@@ -72,12 +72,12 @@ class Scheduler
 
   def validate_availabilities(availabilities)
     list = Array(availabilities).flatten.compact
-    return list if list.all? { |e| Availability.availability?(e) }
+    return list if list.all? { |e| Schedulability.availability?(e) }
     raise ArgumentError, "expected a list of availabilities"
   end
 
   def validate_allow_params!(availability, start_time, end_time)
-    return if Availability.availability?(availability)
+    return if Schedulability.availability?(availability)
     return if valid_time?(start_time) && valid_time?(end_time)
     raise ArgumentError, "must specify either availability_request or (start_time and end_time)"
   end
